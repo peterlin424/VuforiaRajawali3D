@@ -1,4 +1,4 @@
-package project.peter.com.vuforiarajawali3d;
+package project.peter.com.vuforiarajawali3d.Unit;
 
 import android.app.Activity;
 import android.content.Context;

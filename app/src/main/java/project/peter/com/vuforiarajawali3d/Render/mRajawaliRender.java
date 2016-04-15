@@ -2,7 +2,6 @@ package project.peter.com.vuforiarajawali3d.Render;
 
 import android.app.Activity;
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import org.rajawali3d.Object3D;
@@ -14,7 +13,7 @@ import org.rajawali3d.materials.methods.DiffuseMethod;
 import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Matrix4;
 
-import project.peter.com.vuforiarajawali3d.ArcballCamera;
+import project.peter.com.vuforiarajawali3d.Unit.ArcballCamera;
 import project.peter.com.vuforiarajawali3d.R;
 
 /**
@@ -105,18 +104,18 @@ public class mRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer {
 
     @Override
     public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-        Log.d("Peter", "onOffsetsChanged");
+//        Log.d("Peter", "onOffsetsChanged");
     }
 
     @Override
     public void onTouchEvent(MotionEvent event) {
-        Log.d("Peter", "onTouchEvent");
+//        Log.d("Peter", "onTouchEvent");
     }
 
     @Override
     public void onRender(final long elapsedTime, final double deltaTime) {
         super.onRender(elapsedTime, deltaTime);
-        Log.d("Peter", "onRender");
+//        Log.d("Peter", "onRender");
 
         try {
             WatchObj.render(arcball, vpMatrix, projMatrix, vMatrix, null);

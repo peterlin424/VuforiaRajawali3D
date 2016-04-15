@@ -17,7 +17,9 @@ import com.qualcomm.vuforia.Vuforia;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import project.peter.com.vuforiarajawali3d.ARActivity;
+//import project.peter.com.vuforiarajawali3d.ARActivity;
+import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
+import project.peter.com.vuforiarajawali3d.ImageTargetActivity;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
 import project.peter.com.vuforiarajawali3d.SampleApplication.utils.LoadingDialogHandler;
 import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleUtils;
@@ -30,16 +32,16 @@ public class mVuforiaRender implements GLSurfaceView.Renderer {
     private static final String LOGTAG = "ImageTargetRenderer";
 
     private SampleApplicationSession vuforiaAppSession;
-    private ARActivity mActivity;
+    private BaseVuforiaActivity mActivity;
 
     private Renderer mRenderer;
 
-    public boolean mIsActive = false;
+//    public boolean mIsActive = false;
 
     // TODO 顯示模型放大倍數
     private static final float OBJECT_SCALE_FLOAT = 0.5f;
 
-    public mVuforiaRender(ARActivity activity,
+    public mVuforiaRender(BaseVuforiaActivity activity,
                               SampleApplicationSession session)
     {
         mActivity = activity;
@@ -118,14 +120,14 @@ public class mVuforiaRender implements GLSurfaceView.Renderer {
                         OBJECT_SCALE_FLOAT, OBJECT_SCALE_FLOAT);
 
                 Matrix.multiplyMM(modelViewProjection, 0, vuforiaAppSession.getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
-                ARActivity.mRajawaliRender.moveObject3D(modelViewProjection, vuforiaAppSession.getProjectionMatrix().getData(), modelViewMatrix);
+                ImageTargetActivity.mRajawaliRender.moveObject3D(modelViewProjection, vuforiaAppSession.getProjectionMatrix().getData(), modelViewMatrix);
 
                 SampleUtils.checkGLError("Render Frame");
             }
-            ARActivity.mRajawaliRender.isShowObject(true);
+            ImageTargetActivity.mRajawaliRender.isShowObject(true);
 
         } else {
-            ARActivity.mRajawaliRender.isShowObject(false);
+            ImageTargetActivity.mRajawaliRender.isShowObject(false);
         }
 
         mRenderer.end();
@@ -147,8 +149,8 @@ public class mVuforiaRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onDrawFrame(GL10 gl) {
-        if (!mIsActive)
-            return;
+//        if (!mIsActive)
+//            return;
 
         // Call our function to render content
         renderFrame();

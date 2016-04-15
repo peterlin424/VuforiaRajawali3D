@@ -18,10 +18,24 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Open AR"
-        android:id="@+id/button"
+        android:text="Image Target"
+        android:id="@+id/bt_image_target"
         android:layout_below="@+id/textView"
         android:layout_alignParentStart="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Cloud Reco"
+        android:id="@+id/bt_cloud_reco"
+        android:layout_below="@+id/bt_image_target"
+        android:layout_alignParentStart="true" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Multi Target"
+        android:id="@+id/bt_multi_target"
+        android:layout_below="@+id/bt_cloud_reco"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
