@@ -21,6 +21,8 @@ import org.rajawali3d.math.vector.Vector3;
  */
 public class ArcballCamera extends Camera {
 
+    private static final String LOGTAG = "ArcballCamera";
+
     private Context mContext;
     private ScaleGestureDetector mScaleDetector;
     private View.OnTouchListener mGestureListener;
@@ -93,8 +95,8 @@ public class ArcballCamera extends Camera {
     {
         out.setX((2 * x - mLastWidth) / mLastWidth);
         out.setY(-(2 * y - mLastHeight) / mLastHeight);
-        Log.i("mapToScreen", "x : " + String.valueOf(out.getX()));
-        Log.i("mapToScreen", "y : " + String.valueOf(out.getY()));
+        Log.d(LOGTAG, "mapToScreen x : " + String.valueOf(out.getX()));
+        Log.d(LOGTAG, "mapToScreen y : " + String.valueOf(out.getY()));
     }
 
     private void startRotation(final float x, final float y)

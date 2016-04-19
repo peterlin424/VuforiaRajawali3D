@@ -8,6 +8,7 @@ countries.
 
 package project.peter.com.vuforiarajawali3d.SampleApplication;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -30,11 +31,11 @@ import com.qualcomm.vuforia.Vuforia;
 import com.qualcomm.vuforia.Vuforia.UpdateCallbackInterface;
 
 import project.peter.com.vuforiarajawali3d.R;
+import project.peter.com.vuforiarajawali3d.Unit.VuforiaKeys;
 
 
 public class SampleApplicationSession implements UpdateCallbackInterface
 {
-    
     private static final String LOGTAG = "Vuforia_Sample_Applications";
     
     // Reference to the current activity
@@ -79,6 +80,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
     
     
     // Initializes Vuforia and sets up preferences.
+    @SuppressLint("LongLogTag")
     public void initAR(Activity activity, int screenOrientation)
     {
         SampleApplicationException vuforiaException = null;
@@ -140,6 +142,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
     
     
     // Starts Vuforia, initialize and starts the camera and start the trackers
+    @SuppressLint("LongLogTag")
     public void startAR(int camera) throws SampleApplicationException
     {
         String error;
@@ -345,8 +348,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
             // Prevent the onDestroy() method to overlap with initialization:
             synchronized (mShutdownLock)
             {
-                // TODO 設定 vuforia key
-                Vuforia.setInitParameters(mActivity, mVuforiaFlags, mActivity.getResources().getString(R.string.license_key));
+                Vuforia.setInitParameters(mActivity, mVuforiaFlags, VuforiaKeys.LicenseKey);
                 do
                 {
                     // Vuforia.init() blocks until an initialization step is
@@ -380,6 +382,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
         }
         
         
+        @SuppressLint("LongLogTag")
         protected void onPostExecute(Boolean result)
         {
             // Done initializing Vuforia, proceed to next application
@@ -455,6 +458,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
         }
         
         
+        @SuppressLint("LongLogTag")
         protected void onPostExecute(Boolean result)
         {
             
@@ -530,6 +534,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
     
     
     // Stores the orientation depending on the current resources configuration
+    @SuppressLint("LongLogTag")
     private void updateActivityOrientation()
     {
         Configuration config = mActivity.getResources().getConfiguration();

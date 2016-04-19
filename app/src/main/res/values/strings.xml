@@ -1,8 +1,6 @@
 <resources>
     <string name="app_name">VuforiaRajawali3D</string>
 
-    <string name="license_key">AVHnCxH/////AAAAASpOGMlT1koQt7mV24xvKux1kQMmLbXADm8+pP5oKpws9PFu3yRE4FRJnGLeuEu4XVF1uNGvpHoY4rML2idj2HEsaS2uj31sUs5u7F1UyM9xfH5j9pnJhX+I39lZE7996ga8G+j9er7suI9VlIC3rbsDsYNUgF4Me5LED28+ua27yaMcdVl+x+SVek6reReWPI2KSVW7zt50EZtDf4VjCmw1waSri92pSCzQ+kp81D4j02ilm+c/UuekFzJQyMgnouXpuI2thsEph12bxBCljzVOmleUFnoIOMlnNAHHtnAyRpfWygDjzOFUnT9+O391KfPKsnpKI/Df1pvkaAZ0MuD1e7iCm7qTbBv6b/L6Q+mA</string>
-
     <string name="UPDATE_ERROR_AUTHORIZATION_FAILED_TITLE">Authorization Error</string>
     <string name="UPDATE_ERROR_PROJECT_SUSPENDED_TITLE">Authorization Error</string>
     <string name="UPDATE_ERROR_NO_NETWORK_CONNECTION_TITLE">Network Unavailable</string>

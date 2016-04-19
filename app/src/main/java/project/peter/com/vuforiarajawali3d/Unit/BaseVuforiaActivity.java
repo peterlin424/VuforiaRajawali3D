@@ -1,21 +1,18 @@
 package project.peter.com.vuforiarajawali3d.Unit;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.qualcomm.vuforia.CameraDevice;
@@ -36,9 +33,6 @@ import org.rajawali3d.surface.RajawaliSurfaceView;
 import java.util.ArrayList;
 
 import project.peter.com.vuforiarajawali3d.R;
-import project.peter.com.vuforiarajawali3d.Render.mCloudRecoRender;
-import project.peter.com.vuforiarajawali3d.Render.mRajawaliRender;
-import project.peter.com.vuforiarajawali3d.Render.mVuforiaRender;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationControl;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationException;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
@@ -48,50 +42,47 @@ import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleApplica
 /**
  * Created by linweijie on 4/13/16.
  */
-public class BaseVuforiaActivity extends Activity implements SampleApplicationControl {
+public class BaseVuforiaActivity extends AppCompatActivity implements SampleApplicationControl {
+
+    private static final String LOGTAG = "BaseVuforiaActivity";
 
     public final static int MODE_ImageTarget = 0;
     public final static int MODE_CloudReco = 1;
-
     private int MODE = MODE_ImageTarget;
 
+    private SampleApplicationSession vuforiaAppSession;
 
-
-
-
-
-
-    private static final String LOGTAG = "BaseVuforia";
-    SampleApplicationSession vuforiaAppSession;
-
+    private static final int HIDE_LOADING_DIALOG = 0;
+    private static final int SHOW_LOADING_DIALOG = 1;
+    private boolean mIsDroidDevice = false;
+    private boolean mExtendedTracking = false;
     private SampleApplicationGLView mGlView;
     private RelativeLayout mUILayout;
     private GestureDetector mGestureDetector;
-    public LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(this);
     private AlertDialog mErrorDialog;
-    boolean mIsDroidDevice = false;
-    private boolean mExtendedTracking = false;
-    static final int HIDE_LOADING_DIALOG = 0;
-    static final int SHOW_LOADING_DIALOG = 1;
+    public LoadingDialogHandler loadingDialogHandler = new LoadingDialogHandler(this);
+
+    private RelativeLayout VuforiaLayout;
+    private RelativeLayout RajawaliLayout;
 
     // ImageTarget
-    private DataSet mCurrentDataset;
     private int mCurrentDatasetSelectionIndex = 0;
-    private ArrayList<String> mDatasetStrings = new ArrayList<String>();
     private boolean mContAutofocus = false;
+    private ArrayList<String> mDatasetStrings = new ArrayList<>();
+    private DataSet mCurrentDataset;
 
     // CloudReco
-    static final int INIT_SUCCESS = 2;
-    static final int INIT_ERROR_NO_NETWORK_CONNECTION = -1;
-    static final int INIT_ERROR_SERVICE_NOT_AVAILABLE = -2;
-    static final int UPDATE_ERROR_AUTHORIZATION_FAILED = -1;
-    static final int UPDATE_ERROR_PROJECT_SUSPENDED = -2;
-    static final int UPDATE_ERROR_NO_NETWORK_CONNECTION = -3;
-    static final int UPDATE_ERROR_SERVICE_NOT_AVAILABLE = -4;
-    static final int UPDATE_ERROR_BAD_FRAME_QUALITY = -5;
-    static final int UPDATE_ERROR_UPDATE_SDK = -6;
-    static final int UPDATE_ERROR_TIMESTAMP_OUT_OF_RANGE = -7;
-    static final int UPDATE_ERROR_REQUEST_TIMEOUT = -8;
+    private static final int INIT_SUCCESS = 2;
+    private static final int INIT_ERROR_NO_NETWORK_CONNECTION = -1;
+    private static final int INIT_ERROR_SERVICE_NOT_AVAILABLE = -2;
+    private static final int UPDATE_ERROR_AUTHORIZATION_FAILED = -1;
+    private static final int UPDATE_ERROR_PROJECT_SUSPENDED = -2;
+    private static final int UPDATE_ERROR_NO_NETWORK_CONNECTION = -3;
+    private static final int UPDATE_ERROR_SERVICE_NOT_AVAILABLE = -4;
+    private static final int UPDATE_ERROR_BAD_FRAME_QUALITY = -5;
+    private static final int UPDATE_ERROR_UPDATE_SDK = -6;
+    private static final int UPDATE_ERROR_TIMESTAMP_OUT_OF_RANGE = -7;
+    private static final int UPDATE_ERROR_REQUEST_TIMEOUT = -8;
 
     boolean mFinderStarted = false;
     boolean mStopFinderIfStarted = false;
@@ -99,29 +90,62 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
     private static String kAccessKey;
     private static String kSecretKey;
 
+    private ArrayList<String> CloudDataSet = new ArrayList<>();
+
     // Error message handling:
     private int mlastErrorCode = 0;
     private int mInitErrorCode = 0;
     private boolean mFinishActivityOnError;
     private double mLastErrorTime;
 
-    //
-    public static mRajawaliRender mRajawaliRender;
+    // Renders
+    public static BaseRajawaliRender BaseRajawaliRender = null;
+    public static BaseVuforiaRender BaseVuforiaRender = null;
 
+    /**
+     * onCreate 前所需的設定：辨識模式, 本地辨識物 list, 雲端辨識物 keys
+     * */
     public void setARMode(int mode){
         this.MODE = mode;
     }
+    //ImageTarget
     public void setDatasetStrings(ArrayList<String> datasetStrings){
         this.mDatasetStrings = datasetStrings;
+    }
+    public DataSet getmCurrentDataset() {
+        return mCurrentDataset;
+    }
+    //CloudReco
+    public void setCloudDataSet(ArrayList<String> cloudDataSet){
+        this.CloudDataSet = cloudDataSet;
+    }
+    public ArrayList<String> getCloudDataSet(){
+        return this.CloudDataSet;
     }
     public void setCloudTargetsKey(String accessKey, String secretKey){
         this.kAccessKey = accessKey;
         this.kSecretKey = secretKey;
     }
 
+    /**
+     * onCreate 後所需的設定：顯示 3D 模型 list, 切換要顯示的 3D 模型
+     * */
+    public void setModel3DArrayList(ArrayList<Model3D> model3DArrayList){
+        BaseRajawaliRender.setModel3DArrayList(model3DArrayList);
+    }
+    public void ChangeModelByIndex(int index){
+        BaseRajawaliRender.setShowModelByIndex(index);
+    }
+
+    /**
+     * Android life cycle
+     * */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.base_vura_layout);
+        VuforiaLayout = (RelativeLayout)findViewById(R.id.vuforia_layout);
+        RajawaliLayout = (RelativeLayout)findViewById(R.id.rajawali_layout);
 
         switch (MODE){
             case MODE_ImageTarget:
@@ -172,10 +196,10 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
         surface.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
 
         // Add mSurface to your root view
-        addContentView(surface, new ActionBar.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT));
+        RajawaliLayout.addView(surface);
 
-        mRajawaliRender = new mRajawaliRender(this);
-        surface.setSurfaceRenderer(mRajawaliRender);
+        BaseRajawaliRender = new BaseRajawaliRender(this);
+        surface.setSurfaceRenderer(BaseRajawaliRender);
     }
 
     @Override
@@ -292,11 +316,12 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
         loadingDialogHandler.mLoadingDialogContainer
                 .setVisibility(View.VISIBLE);
 
-        addContentView(mUILayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT));
-
+        VuforiaLayout.addView(mUILayout);
     }
 
+    /**
+     * SampleApplicationControl interface function
+     * */
     // Callback for configuration changes the activity handles itself
     @Override
     public void onConfigurationChanged(Configuration config)
@@ -518,8 +543,7 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
         if (exception == null) {
             initApplicationAR();
 
-            addContentView(mGlView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT));
+            VuforiaLayout.addView(mGlView);
 
             // Start the camera:
             try
@@ -559,6 +583,7 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
             }
         }
     }
+
     // Initializes AR application components.
     private void initApplicationAR()
     {
@@ -571,20 +596,18 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
         mGlView = new SampleApplicationGLView(this);
         mGlView.init(translucent, depthSize, stencilSize);
 
-        // Setups the Renderer of the GLView
-        GLSurfaceView.Renderer mRenderer = null;
-
+        BaseVuforiaRender = new BaseVuforiaRender(this, vuforiaAppSession);
         switch (MODE){
             case MODE_ImageTarget:
-                mRenderer = new mVuforiaRender(this, vuforiaAppSession);
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_ImageTarget);
                 break;
             case MODE_CloudReco:
-                mRenderer = new mCloudRecoRender(this, vuforiaAppSession);
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_CloudReco);
                 break;
         }
 
-        if (mRenderer != null)
-            mGlView.setRenderer(mRenderer);
+        if (BaseVuforiaRender != null)
+            mGlView.setRenderer(BaseVuforiaRender);
 
     }
 
@@ -721,9 +744,9 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
                 ObjectTracker objectTracker = (ObjectTracker) trackerManager
                         .getTracker(ObjectTracker.getClassType());
 
-                TargetFinder finder = objectTracker.getTargetFinder();
+                TargetFinder mFinder = objectTracker.getTargetFinder();
 
-                final int statusCode = finder.updateSearchResults();
+                final int statusCode = mFinder.updateSearchResults();
 
                 if (statusCode < 0)
                 {
@@ -736,13 +759,13 @@ public class BaseVuforiaActivity extends Activity implements SampleApplicationCo
 
                 } else if (statusCode == TargetFinder.UPDATE_RESULTS_AVAILABLE)
                 {
-                    if (finder.getResultCount() > 0)
+                    if (mFinder.getResultCount() > 0)
                     {
-                        TargetSearchResult result = finder.getResult(0);
+                        TargetSearchResult result = mFinder.getResult(0);
 
                         if (result.getTrackingRating() > 0)
                         {
-                            Trackable trackable = finder.enableTracking(result);
+                            Trackable trackable = mFinder.enableTracking(result);
 
                             if (mExtendedTracking)
                                 trackable.startExtendedTracking();
