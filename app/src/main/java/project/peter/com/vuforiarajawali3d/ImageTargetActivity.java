@@ -34,13 +34,16 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         ArrayList<String> dataString = new ArrayList<>();
         dataString.add("Watch.xml");
         this.setDatasetStrings(dataString);
+
+        // set max targets will show in same time
+        this.setMAX_TARGETS_COUNT(2);
     }
 
     private void setShowModels(){
         // set show models
         ArrayList<Model3D> arrayList = new ArrayList<>();
 
-        Model3D tempM3D = new Model3D(R.raw.watch_obj);
+        Model3D tempM3D = new Model3D(this, R.raw.watch_obj);
         tempM3D.addTexture(R.drawable.watch001);
         tempM3D.addTexture(R.drawable.watch002);
         tempM3D.setObj_scale(10.0f);
@@ -49,14 +52,14 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.setObj_rotate_angle(90.0f);
         arrayList.add(tempM3D);
 
-        tempM3D = new Model3D(R.raw.roadcar_obj);
+        tempM3D = new Model3D(this, R.raw.roadcar_obj);
         tempM3D.addTexture(R.drawable.u1);
         tempM3D.addTexture(R.drawable.u2);
-        arrayList.add(tempM3D);
         tempM3D.setObj_scale(0.5f);
         tempM3D.setObj_translate_x(-100.0f);
         tempM3D.setObj_translate_y(-80.0f);
         tempM3D.setObj_rotate_angle(90.0f);
+        arrayList.add(tempM3D);
         this.setModel3DArrayList(arrayList);
     }
 

@@ -3,7 +3,6 @@ package project.peter.com.vuforiarajawali3d.Unit;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
-import android.util.Log;
 
 import com.qualcomm.vuforia.DataSet;
 import com.qualcomm.vuforia.Matrix44F;
@@ -15,11 +14,11 @@ import com.qualcomm.vuforia.VIDEO_BACKGROUND_REFLECTION;
 import com.qualcomm.vuforia.Vuforia;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import project.peter.com.vuforiarajawali3d.ImageTargetActivity;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
 import project.peter.com.vuforiarajawali3d.SampleApplication.utils.LoadingDialogHandler;
 import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleUtils;
@@ -38,28 +37,8 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
     private Renderer mRenderer;
 
-    private float OBJECT_SCALE_FLOAT = 1.0f;
-    private float OBJECT_TRANSLATE_X_FLOAT = 0.0f;
-    private float OBJECT_TRANSLATE_Y_FLOAT = 0.0f;
-    private float OBJECT_ROTATE_ANGLE_FLOAT = 0.0f;
-
-    private int LAST_INDEX = -1;
-
     public void setARMode(int mode){
         this.MODE = mode;
-    }
-
-    public void setOBJECT_SCALE_FLOAT(float OBJECT_SCALE_FLOAT) {
-        this.OBJECT_SCALE_FLOAT = OBJECT_SCALE_FLOAT;
-    }
-    public void setOBJECT_TRANSLATE_X_FLOAT(float OBJECT_TRANSLATE_X_FLOAT) {
-        this.OBJECT_TRANSLATE_X_FLOAT = OBJECT_TRANSLATE_X_FLOAT;
-    }
-    public void setOBJECT_TRANSLATE_Y_FLOAT(float OBJECT_TRANSLATE_Y_FLOAT) {
-        this.OBJECT_TRANSLATE_Y_FLOAT = OBJECT_TRANSLATE_Y_FLOAT;
-    }
-    public void setOBJECT_ROTATE_ANGLE_FLOAT(float OBJECT_ROTATE_ANGLE_FLOAT) {
-        this.OBJECT_ROTATE_ANGLE_FLOAT = OBJECT_ROTATE_ANGLE_FLOAT;
     }
 
     public BaseVuforiaRender(BaseVuforiaActivity activity,
@@ -73,7 +52,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
      * */
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-        Log.d(LOGTAG, "GLRenderer.onSurfaceCreated");
+//        Log.d(LOGTAG, "GLRenderer.onSurfaceCreated");
         initRendering();
         vuforiaAppSession.onSurfaceCreated();
     }
@@ -114,6 +93,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             GLES20.glFrontFace(GLES20.GL_CCW); // Back camera
 
         // did we find any trackables this frame?
+//        Log.d(LOGTAG, "getNumTrackableResults : " + String.valueOf(state.getNumTrackableResults()));
         switch (MODE){
             case BaseVuforiaActivity.MODE_ImageTarget:
                 ImageTarget_FindTrackables(state);
@@ -127,53 +107,63 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         mRenderer.end();
     }
 
+    // TODO bug : 一筆以上的模型，只要有模型離開視窗，則無法隱藏，必須全部辨識離開才會消失
     private void ImageTarget_FindTrackables(State state){
+
         if (state.getNumTrackableResults()>0){
+
+            DataSet temp_dataset = mActivity.getmCurrentDataset();
+            HashMap<Integer, TrackableResult> recorder = new HashMap<>();
 
             for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
                 TrackableResult result = state.getTrackableResult(tIdx);
 
                 if (result == null)
                 {
-                    mActivity.BaseRajawaliRender.isShowObject(false);
+                    mActivity.HideAllModel();
                     return;
                 }
-                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+//                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
-                int textureIndex = 0;
-
-                DataSet temp_dataset = mActivity.getmCurrentDataset();
                 for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                     if (temp_dataset.getTrackable(i).getName().equals(result.getTrackable().getName())){
-                        textureIndex = i;
+                        recorder.put(i, result);
                     }
                 }
-                renderAugmentation(result, textureIndex);
             }
-            ImageTargetActivity.BaseRajawaliRender.isShowObject(true);
 
+            for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                if (recorder.get(i)!=null){
+                    mActivity.setVisiableModelByIndex(i, true);
+                    renderAugmentation(recorder.get(i), i);
+                } else {
+                    mActivity.setVisiableModelByIndex(i, false);
+                }
+            }
         } else {
-            ImageTargetActivity.BaseRajawaliRender.isShowObject(false);
+            mActivity.HideAllModel();
         }
     }
 
     private void CloudReco_FindTrackables(State state){
+
+        // 雲端辨識僅追蹤一筆
         if (state.getNumTrackableResults()>0){
-            int test = state.getNumTrackableResults();
+
+            ArrayList<String> temp = mActivity.getCloudDataSet();
+
             for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
                 TrackableResult result = state.getTrackableResult(tIdx);
                 if (result == null)
                 {
-                    mActivity.BaseRajawaliRender.isShowObject(false);
+                    mActivity.HideAllModel();
                     return;
                 }
-                Log.d(LOGTAG, "CloudReco trackable " + tIdx + " Name : " + result.getTrackable().getName());
+//                Log.d(LOGTAG, "CloudReco trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依參考雲端自訂的 Target Name 來選擇所要顯示的 model
                 int textureIndex = 0;
-
-                ArrayList<String> temp = mActivity.getCloudDataSet();
                 for (int i=0; i<temp.size(); ++i){
                     if (result.getTrackable().getName().equals(temp.get(i))){
                         textureIndex = i;
@@ -181,24 +171,17 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
 
                 mActivity.stopFinderIfStarted();
-
+                mActivity.setVisiableModelByIndex(textureIndex, true);
                 renderAugmentation(result, textureIndex);
             }
-            ImageTargetActivity.BaseRajawaliRender.isShowObject(true);
-
         } else {
             mActivity.startFinderIfStopped();
-            ImageTargetActivity.BaseRajawaliRender.isShowObject(false);
+            mActivity.HideAllModel();
         }
     }
 
     private void renderAugmentation(TrackableResult trackableResult, int textureIndex)
     {
-        // 當辨識物切換時，在進行模型切換
-        if (LAST_INDEX!=textureIndex){
-            mActivity.ChangeModelByIndex(textureIndex);
-            LAST_INDEX = textureIndex;
-        }
 
         // 取得辨識變形矩陣
         Matrix44F modelViewMatrix_Vuforia = Tool
@@ -206,15 +189,20 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
         float[] modelViewProjection = new float[16];
 
-        Matrix.translateM(modelViewMatrix, 0, OBJECT_TRANSLATE_X_FLOAT, OBJECT_TRANSLATE_Y_FLOAT,
-                OBJECT_SCALE_FLOAT);
-        Matrix.rotateM(modelViewMatrix, 0, OBJECT_ROTATE_ANGLE_FLOAT, 1.0f, 0, 0);
-        Matrix.scaleM(modelViewMatrix, 0, OBJECT_SCALE_FLOAT,
-                OBJECT_SCALE_FLOAT, OBJECT_SCALE_FLOAT);
+        Matrix.translateM(modelViewMatrix, 0,
+                mActivity.getOBJECT_TRANSLATE_X_FLOAT(textureIndex),
+                mActivity.getOBJECT_TRANSLATE_Y_FLOAT(textureIndex),
+                mActivity.getOBJECT_SCALE_FLOAT(textureIndex));
+        Matrix.rotateM(modelViewMatrix, 0,
+                mActivity.getOBJECT_ROTATE_ANGLE_FLOAT(textureIndex), 1.0f, 0, 0);
+        Matrix.scaleM(modelViewMatrix, 0,
+                mActivity.getOBJECT_SCALE_FLOAT(textureIndex),
+                mActivity.getOBJECT_SCALE_FLOAT(textureIndex),
+                mActivity.getOBJECT_SCALE_FLOAT(textureIndex));
         Matrix.multiplyMM(modelViewProjection, 0, vuforiaAppSession.getProjectionMatrix().getData(), 0, modelViewMatrix, 0);
 
         // 繪製於 BaseRajawaliRender 目前的模型上面
-        mActivity.BaseRajawaliRender.moveObject3D(modelViewProjection, vuforiaAppSession.getProjectionMatrix().getData(), modelViewMatrix);
+        mActivity.BaseRajawaliRender.moveObject3D(textureIndex, modelViewProjection, vuforiaAppSession.getProjectionMatrix().getData(), modelViewMatrix);
 
         SampleUtils.checkGLError("Render Frame");
     }

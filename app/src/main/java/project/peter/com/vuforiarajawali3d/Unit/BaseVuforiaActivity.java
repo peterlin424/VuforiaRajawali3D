@@ -50,6 +50,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public final static int MODE_CloudReco = 1;
     private int MODE = MODE_ImageTarget;
 
+    private int MAX_TARGETS_COUNT = 1;
+
     private SampleApplicationSession vuforiaAppSession;
 
     private static final int HIDE_LOADING_DIALOG = 0;
@@ -115,6 +117,10 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public DataSet getmCurrentDataset() {
         return mCurrentDataset;
     }
+    public void setMAX_TARGETS_COUNT(int MAX_TARGETS_COUNT) {
+        this.MAX_TARGETS_COUNT = MAX_TARGETS_COUNT;
+    }
+
     //CloudReco
     public void setCloudDataSet(ArrayList<String> cloudDataSet){
         this.CloudDataSet = cloudDataSet;
@@ -133,8 +139,27 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public void setModel3DArrayList(ArrayList<Model3D> model3DArrayList){
         BaseRajawaliRender.setModel3DArrayList(model3DArrayList);
     }
-    public void ChangeModelByIndex(int index){
-        BaseRajawaliRender.setShowModelByIndex(index);
+
+    /**
+     *
+     * */
+    public void HideAllModel(){
+        BaseRajawaliRender.HideAllModel();
+    }
+    public void setVisiableModelByIndex(int index, boolean visiable){
+        BaseRajawaliRender.setVisiableModelByIndex(index, visiable);
+    }
+    public float getOBJECT_TRANSLATE_X_FLOAT(int index){
+        return BaseRajawaliRender.getObjTranslateX(index);
+    }
+    public float getOBJECT_TRANSLATE_Y_FLOAT(int index){
+        return BaseRajawaliRender.getObjTranslateY(index);
+    }
+    public float getOBJECT_SCALE_FLOAT(int index){
+        return BaseRajawaliRender.getObjScale(index);
+    }
+    public float getOBJECT_ROTATE_ANGLE_FLOAT(int index){
+        return BaseRajawaliRender.getObjRotateAngle(index);
     }
 
     /**
@@ -264,6 +289,12 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         System.gc();
     }
 
+    @Override
+    public boolean onTouchEvent(MotionEvent event)
+    {
+        return mGestureDetector.onTouchEvent(event);
+    }
+
     // Process Single Tap event to trigger autofocus
     private class GestureListener extends
             GestureDetector.SimpleOnGestureListener
@@ -326,7 +357,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     @Override
     public void onConfigurationChanged(Configuration config)
     {
-        Log.d(LOGTAG, "onConfigurationChanged");
+//        Log.d(LOGTAG, "onConfigurationChanged");
         super.onConfigurationChanged(config);
 
         vuforiaAppSession.onConfigurationChanged();
@@ -435,6 +466,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         // Start the tracker:
         TrackerManager trackerManager = TrackerManager.getInstance();
 
+        Vuforia.setHint (com.qualcomm.vuforia.HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, MAX_TARGETS_COUNT);
         switch (MODE){
             case MODE_ImageTarget:
                 Tracker tracker = TrackerManager.getInstance().getTracker(

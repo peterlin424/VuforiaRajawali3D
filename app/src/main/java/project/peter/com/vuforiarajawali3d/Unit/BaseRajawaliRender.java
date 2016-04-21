@@ -3,17 +3,10 @@ package project.peter.com.vuforiarajawali3d.Unit;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import org.rajawali3d.Object3D;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
-import org.rajawali3d.loader.LoaderOBJ;
-import org.rajawali3d.materials.Material;
-import org.rajawali3d.materials.methods.DiffuseMethod;
-import org.rajawali3d.materials.textures.Texture;
-import org.rajawali3d.math.Matrix4;
 
 import java.util.ArrayList;
 
@@ -31,12 +24,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
     private Activity activity;
     private Context context;
     private DirectionalLight directionalLight;
-    private Object3D Object3D;
     private ArcballCamera arcball;
-    private Material material;
-    private Matrix4 vpMatrix;
-    private Matrix4 projMatrix;
-    private Matrix4 vMatrix;
 
     private ArrayList<Model3D> model3DArrayList = new ArrayList<>();
 
@@ -51,21 +39,24 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
      * Vuforia 控制用
      * */
     public void moveObject3D(
+            int index,
             float[] vpMatrix,
             float[] projMatrix,
             float[] vMatrix){
 
-        this.vpMatrix = new Matrix4().setAll(vpMatrix);
-        this.projMatrix  = new Matrix4().setAll(projMatrix);
-        this.vMatrix = new Matrix4().setAll(vMatrix);
-    }
-
-    public void isShowObject(boolean show){
-        try {
-            this.Object3D.setVisible(show);
-        }catch (Exception e){
-            e.printStackTrace();
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                model3DArrayList.get(0).setVpMatrix(vpMatrix);
+                model3DArrayList.get(0).setProjMatrix(projMatrix);
+                model3DArrayList.get(0).setvMatrix(vMatrix);
+                return;
+            } else {
+                return;
+            }
         }
+        model3DArrayList.get(index).setVpMatrix(vpMatrix);
+        model3DArrayList.get(index).setProjMatrix(projMatrix);
+        model3DArrayList.get(index).setvMatrix(vMatrix);
     }
 
     /**
@@ -74,72 +65,63 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
     public void setModel3DArrayList(ArrayList<Model3D> model3DArrayList) {
         this.model3DArrayList = model3DArrayList;
     }
-
-    public void setShowModelByIndex(int index){
-        if (model3DArrayList.size()>0){
-            if (model3DArrayList.size()-1<index){
-                Log.d(LOGTAG, "model3DArrayList size is wrong");
-                return;
-            }
-
-            showLoadingDialog();
-
-            try{
-                Model3D temp = model3DArrayList.get(index);
-                /** 設定模型 */
-                // 讀入檔案
-                LoaderOBJ parser = new LoaderOBJ(mContext.getResources(), mTextureManager, temp.getResId_obj());
-                parser.parse();
-
-                Object3D = parser.getParsedObject();
-
-                // 材質貼皮
-                material = new Material();
-                material.enableLighting(true);
-                material.setDiffuseMethod(new DiffuseMethod.Lambert());
-
-                for (int i=0; i<temp.getResId_textures().size(); ++i){
-                    material.addTexture(new Texture("Object3D", temp.getResId_textures().get(i)));
-                }
-                Object3D.setMaterial(material);
-
-                BaseVuforiaActivity.BaseVuforiaRender.setOBJECT_SCALE_FLOAT(temp.getObj_scale());
-                BaseVuforiaActivity.BaseVuforiaRender.setOBJECT_TRANSLATE_X_FLOAT(temp.getObj_translate_x());
-                BaseVuforiaActivity.BaseVuforiaRender.setOBJECT_TRANSLATE_Y_FLOAT(temp.getObj_translate_y());
-                BaseVuforiaActivity.BaseVuforiaRender.setOBJECT_ROTATE_ANGLE_FLOAT(temp.getObj_rotate_angle());
-
-            } catch (Exception e){
-                e.printStackTrace();
-            } catch (OutOfMemoryError outOfMemoryError){
-                outOfMemoryError.printStackTrace();
-            }
-        } else {
-            Log.d(LOGTAG, "model3DArrayList size is zero");
+    public void HideAllModel(){
+        for (int i=0; i<model3DArrayList.size(); ++i){
+            setVisiableModelByIndex(i, false);
         }
     }
+    public void setVisiableModelByIndex(int index, boolean visiable){
 
-    private void showLoadingDialog(){
-        activity.runOnUiThread(new Runnable() {
-            public void run() {
-                ProgressDialog myDialog = new ProgressDialog(context);
-                myDialog = ProgressDialog.show(context, "Loading", "please wait...", true);
-                final ProgressDialog finalMyDialog = myDialog;
-                new Thread(new Runnable(){
-                    @Override
-                    public void run() {
-                        try{
-                            Thread.sleep(2000);
-                        }
-                        catch(Exception e){
-                            e.printStackTrace();
-                        }
-                        finally{
-                            finalMyDialog.dismiss();
-                        }
-                    }
-                }).start();
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                model3DArrayList.get(0).setVisiable(visiable);
+                return;
+            } else {
+                return;
             }
-        });
+        }
+        model3DArrayList.get(index).setVisiable(visiable);
+    }
+
+    public float getObjScale(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_scale();
+            } else {
+                return 0.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_scale();
+    }
+    public float getObjTranslateX(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_translate_x();
+            } else {
+                return 0.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_translate_x();
+    }
+    public float getObjTranslateY(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_translate_y();
+            } else {
+                return 0.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_translate_y();
+    }
+    public float getObjRotateAngle(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_rotate_angle();
+            } else {
+                return 0.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_rotate_angle();
     }
 
     /**
@@ -147,47 +129,69 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
      * */
     @Override
     protected void initScene() {
-        try {
 
-            /** 定向光 */
-            directionalLight = new DirectionalLight(0.1f, -10.0f, 0.0f); // 座標
-            directionalLight.setColor(1.0f, 1.0f, 1.0f);             // 燈光色
-            directionalLight.setPower(2);                            // 燈光強度
-            getCurrentScene().addLight(directionalLight);
+        showLoadingDialog();
 
-            PointLight mLight = new PointLight();//物件本身亮度
-            mLight.setPosition(0.1f, 40.0f, 0.0f);//設定光亮動畫位置
-            mLight.setPower(25); //3D物件亮度調整
-            getCurrentScene().addLight(mLight);
+        /** 定向光 */
+        directionalLight = new DirectionalLight(0.1f, -10.0f, 0.0f); // 座標
+        directionalLight.setColor(1.0f, 1.0f, 1.0f);             // 燈光色
+        directionalLight.setPower(2);                            // 燈光強度
+        getCurrentScene().addLight(directionalLight);
 
-            /** 視角相機設定 */
-            arcball = new ArcballCamera(mContext, ((Activity)mContext).findViewById(R.id.rajawali_layout));
-            arcball.setPosition(0.1f, 40.0f, 0.0f);
-            getCurrentScene().replaceAndSwitchCamera(getCurrentCamera(), arcball);
+        PointLight mLight = new PointLight();//物件本身亮度
+        mLight.setPosition(0.1f, 40.0f, 0.0f);//設定光亮動畫位置
+        mLight.setPower(25); //3D物件亮度調整
+        getCurrentScene().addLight(mLight);
 
-        } catch (Exception e){
-            e.printStackTrace();
+        /** 視角相機設定 */
+        arcball = new ArcballCamera(mContext, ((Activity)mContext).findViewById(R.id.rajawali_layout));
+        arcball.setPosition(0.1f, 40.0f, 0.0f);
+        getCurrentScene().replaceAndSwitchCamera(getCurrentCamera(), arcball);
+
+        for (int i=0; i<model3DArrayList.size(); ++i){
+            model3DArrayList.get(i).parse(this);
+            model3DArrayList.get(i).setVisiable(false);
         }
     }
 
     @Override
     public void onOffsetsChanged(float xOffset, float yOffset, float xOffsetStep, float yOffsetStep, int xPixelOffset, int yPixelOffset) {
-        Log.d(LOGTAG, "onOffsetsChanged");
+//        Log.d(LOGTAG, "onOffsetsChanged");
     }
 
     @Override
     public void onTouchEvent(MotionEvent event) {
-        Log.d(LOGTAG, "onTouchEvent");
+//        Log.d(LOGTAG, "onTouchEvent");
     }
 
     @Override
     public void onRender(final long elapsedTime, final double deltaTime) {
         super.onRender(elapsedTime, deltaTime);
 
-        try {
-            Object3D.render(arcball, vpMatrix, projMatrix, vMatrix, null);
-        } catch (Exception e){
-            e.printStackTrace();
+        for (int i=0; i<model3DArrayList.size(); ++i){
+            model3DArrayList.get(i).render(arcball);
         }
+    }
+
+    private void showLoadingDialog(){
+        activity.runOnUiThread(new Runnable() {
+            public void run() {
+                ProgressDialog myDialog;
+                myDialog = ProgressDialog.show(context, "Loading", "please wait...", true);
+                final ProgressDialog finalMyDialog = myDialog;
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
+                            finalMyDialog.dismiss();
+                        }
+                    }
+                }).start();
+            }
+        });
     }
 }
