@@ -17,6 +17,8 @@ import android.widget.RelativeLayout;
 
 import com.qualcomm.vuforia.CameraDevice;
 import com.qualcomm.vuforia.DataSet;
+import com.qualcomm.vuforia.Marker;
+import com.qualcomm.vuforia.MarkerTracker;
 import com.qualcomm.vuforia.ObjectTracker;
 import com.qualcomm.vuforia.STORAGE_TYPE;
 import com.qualcomm.vuforia.State;
@@ -25,6 +27,7 @@ import com.qualcomm.vuforia.TargetSearchResult;
 import com.qualcomm.vuforia.Trackable;
 import com.qualcomm.vuforia.Tracker;
 import com.qualcomm.vuforia.TrackerManager;
+import com.qualcomm.vuforia.Vec2F;
 import com.qualcomm.vuforia.Vuforia;
 
 import org.rajawali3d.surface.IRajawaliSurface;
@@ -48,6 +51,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
     public final static int MODE_ImageTarget = 0;
     public final static int MODE_CloudReco = 1;
+    public final static int MODE_FrameMarkers = 2;
+    public final static int MODE_CubiodBox = 3;
+    public final static int MODE_Cylinder = 4;
     private int MODE = MODE_ImageTarget;
 
     private int MAX_TARGETS_COUNT = 1;
@@ -94,6 +100,10 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
     private ArrayList<String> CloudDataSet = new ArrayList<>();
 
+    // FrameMarker
+    private static int FrameMarkerCount = 0;
+    private Marker MarkerDataSet[];
+
     // Error message handling:
     private int mlastErrorCode = 0;
     private int mInitErrorCode = 0;
@@ -131,6 +141,14 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public void setCloudTargetsKey(String accessKey, String secretKey){
         this.kAccessKey = accessKey;
         this.kSecretKey = secretKey;
+    }
+
+    //FrameMarker
+    public static void setFrameMarkerCount(int frameMarkerCount) {
+        FrameMarkerCount = frameMarkerCount;
+    }
+    public static int getFrameMarkerCount() {
+        return FrameMarkerCount;
     }
 
     /**
@@ -201,6 +219,20 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                             .show();
                 }
                 break;
+            case MODE_FrameMarkers:
+                if (FrameMarkerCount==0){
+                    new AlertDialog.Builder(this)
+                            .setTitle("Init Error")
+                            .setMessage("Please setFrameMarkerCount")
+                            .setPositiveButton("cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    BaseVuforiaActivity.this.finish();
+                                }
+                            })
+                            .show();
+                }
+                break;
         }
 
         vuforiaAppSession = new SampleApplicationSession(this);
@@ -215,7 +247,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                 "droid");
 
-        //
+        // init rajawali view
         final RajawaliSurfaceView surface = new RajawaliSurfaceView(this);
         surface.setFrameRate(60.0);
         surface.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);
@@ -365,22 +397,43 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
     @Override
     public boolean doInitTrackers() {
-        TrackerManager tManager = TrackerManager.getInstance();
-        Tracker tracker;
 
         // Indicate if the trackers were initialized correctly
         boolean result = true;
 
-        tracker = tManager.initTracker(ObjectTracker.getClassType());
-        if (tracker == null)
-        {
-            Log.e(
-                    LOGTAG,
-                    "Tracker not initialized. Tracker already initialized or the camera is already started");
-            result = false;
-        } else
-        {
-            Log.i(LOGTAG, "Tracker successfully initialized");
+        TrackerManager trackerManager = TrackerManager.getInstance();
+
+        switch (MODE){
+            case MODE_ImageTarget:
+            case MODE_CloudReco:
+                Tracker tracker = trackerManager.initTracker(ObjectTracker.getClassType());
+                if (tracker == null)
+                {
+                    Log.e(
+                            LOGTAG,
+                            "Tracker not initialized. Tracker already initialized or the camera is already started");
+                    result = false;
+                } else
+                {
+                    Log.i(LOGTAG, "Tracker successfully initialized");
+                }
+                break;
+            case MODE_FrameMarkers:
+                Tracker trackerBase = trackerManager.initTracker(MarkerTracker
+                        .getClassType());
+                MarkerTracker markerTracker = (MarkerTracker) (trackerBase);
+
+                if (markerTracker == null)
+                {
+                    Log.e(
+                            LOGTAG,
+                            "Tracker not initialized. Tracker already initialized or the camera is already started");
+                    result = false;
+                } else
+                {
+                    Log.i(LOGTAG, "Tracker successfully initialized");
+                }
+                break;
         }
 
         return result;
@@ -390,12 +443,12 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public boolean doLoadTrackersData() {
         // Get the object tracker:
         TrackerManager trackerManager = TrackerManager.getInstance();
-        ObjectTracker objectTracker = (ObjectTracker) trackerManager
-                .getTracker(ObjectTracker.getClassType());
 
         try {
             switch (MODE){
                 case MODE_ImageTarget:
+                    ObjectTracker objectTracker = (ObjectTracker) trackerManager
+                            .getTracker(ObjectTracker.getClassType());
                     if (objectTracker == null)
                         return false;
 
@@ -427,8 +480,11 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     }
                     break;
                 case MODE_CloudReco:
+                    ObjectTracker objectTracker_ = (ObjectTracker) trackerManager
+                            .getTracker(ObjectTracker.getClassType());
+
                     // Initialize target finder:
-                    TargetFinder targetFinder = objectTracker.getTargetFinder();
+                    TargetFinder targetFinder = objectTracker_.getTargetFinder();
                     // Start initialization:
                     if (targetFinder.startInit(kAccessKey, kSecretKey))
                     {
@@ -451,6 +507,25 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                         return false;
                     }
                     break;
+                case MODE_FrameMarkers:
+                    MarkerTracker markerTracker = (MarkerTracker) trackerManager
+                            .getTracker(MarkerTracker.getClassType());
+                    if (markerTracker == null)
+                        return false;
+
+                    MarkerDataSet = new Marker[FrameMarkerCount];
+
+                    for (int i=0; i<FrameMarkerCount; ++i){
+                        MarkerDataSet[i] = markerTracker.createFrameMarker(i, "Marker"+String.valueOf(i), new Vec2F(
+                                50, 50));
+                        if (MarkerDataSet[i] == null)
+                        {
+                            Log.e(LOGTAG, "Failed to create frame marker Q.");
+                            return false;
+                        }
+                    }
+                    Log.i(LOGTAG, "Successfully initialized MarkerTracker.");
+                    break;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -466,7 +541,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         // Start the tracker:
         TrackerManager trackerManager = TrackerManager.getInstance();
 
-        Vuforia.setHint (com.qualcomm.vuforia.HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, MAX_TARGETS_COUNT);
+        Vuforia.setHint(com.qualcomm.vuforia.HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, MAX_TARGETS_COUNT);
         switch (MODE){
             case MODE_ImageTarget:
                 Tracker tracker = TrackerManager.getInstance().getTracker(
@@ -484,6 +559,12 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 TargetFinder targetFinder = objectTracker.getTargetFinder();
                 targetFinder.startRecognition();
                 mFinderStarted = true;
+                break;
+            case MODE_FrameMarkers:
+                MarkerTracker markerTracker = (MarkerTracker) trackerManager
+                        .getTracker(MarkerTracker.getClassType());
+                if (markerTracker != null)
+                    markerTracker.start();
                 break;
         }
 
@@ -525,6 +606,12 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     result = false;
                 }
                 break;
+            case MODE_FrameMarkers:
+                MarkerTracker markerTracker = (MarkerTracker) trackerManager
+                        .getTracker(MarkerTracker.getClassType());
+                if (markerTracker != null)
+                    markerTracker.stop();
+                break;
         }
 
         return result;
@@ -558,6 +645,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 }
                 break;
             case MODE_CloudReco:
+            case MODE_FrameMarkers:
                 break;
         }
         return result;
@@ -635,6 +723,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 break;
             case MODE_CloudReco:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_CloudReco);
+                break;
+            case MODE_FrameMarkers:
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_FrameMarkers);
                 break;
         }
 
@@ -804,6 +895,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                         }
                     }
                 }
+                break;
+            case MODE_FrameMarkers:
                 break;
         }
     }

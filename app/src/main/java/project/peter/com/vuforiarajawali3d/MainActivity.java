@@ -20,8 +20,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
         Button bt_cloud_reco = (Button)findViewById(R.id.bt_cloud_reco);
         bt_cloud_reco.setOnClickListener(this);
 
-        Button bt_multi_target = (Button)findViewById(R.id.bt_multi_target);
-        bt_cloud_reco.setOnClickListener(this);
+        Button bt_framemarker_target = (Button)findViewById(R.id.bt_framemarker_target);
+        bt_framemarker_target.setOnClickListener(this);
     }
 
     @Override
@@ -33,7 +33,8 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
             case R.id.bt_cloud_reco:
                 startActivity(new Intent(MainActivity.this, CloudRecoActivity.class));
                 break;
-            case R.id.bt_multi_target:
+            case R.id.bt_framemarker_target:
+                startActivity(new Intent(MainActivity.this, FrameMarkerActivity.class));
                 break;
         }
     }

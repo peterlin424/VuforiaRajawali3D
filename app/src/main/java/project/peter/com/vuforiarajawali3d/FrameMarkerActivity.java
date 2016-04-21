@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
 import project.peter.com.vuforiarajawali3d.Unit.Model3D;
 
-public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnClickListener {
+/**
+ * Created by linweijie on 4/21/16.
+ */
+public class FrameMarkerActivity extends BaseVuforiaActivity implements View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,17 +31,14 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
     private void initAR(){
         // set mode
-        this.setARMode(BaseVuforiaActivity.MODE_ImageTarget);
+        this.setARMode(BaseVuforiaActivity.MODE_FrameMarkers);
 
         // set local target library
-        ArrayList<String> dataString = new ArrayList<>();
-        dataString.add("Watch.xml");
-        this.setDatasetStrings(dataString);
+        this.setFrameMarkerCount(2);
 
         // set max targets will show in same time
         this.setMAX_TARGETS_COUNT(2);
     }
-
     private void setShowModels(){
         // set show models
         ArrayList<Model3D> arrayList = new ArrayList<>();
@@ -55,14 +55,13 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D = new Model3D(this, R.raw.roadcar_obj);
         tempM3D.addTexture(R.drawable.u1);
         tempM3D.addTexture(R.drawable.u2);
-        tempM3D.setObj_scale(0.2f);
+        tempM3D.setObj_scale(0.1f);
         tempM3D.setObj_translate_x(-20.0f);
         tempM3D.setObj_translate_y(-20.0f);
         tempM3D.setObj_rotate_angle(90.0f);
         arrayList.add(tempM3D);
         this.setModel3DArrayList(arrayList);
     }
-
     private void addCustomView(){
         // add custom view
         View root = findViewById(android.R.id.content);
@@ -71,6 +70,6 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(this, "This is ImageTarget Sample.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "This is FrameMarker Sample.", Toast.LENGTH_SHORT).show();
     }
 }

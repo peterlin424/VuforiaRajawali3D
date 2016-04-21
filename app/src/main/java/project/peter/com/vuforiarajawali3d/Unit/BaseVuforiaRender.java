@@ -5,6 +5,9 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 
 import com.qualcomm.vuforia.DataSet;
+import com.qualcomm.vuforia.Marker;
+import com.qualcomm.vuforia.MarkerResult;
+import com.qualcomm.vuforia.MarkerTracker;
 import com.qualcomm.vuforia.Matrix44F;
 import com.qualcomm.vuforia.Renderer;
 import com.qualcomm.vuforia.State;
@@ -101,13 +104,15 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             case BaseVuforiaActivity.MODE_CloudReco:
                 CloudReco_FindTrackables(state);
                 break;
+            case BaseVuforiaActivity.MODE_FrameMarkers:
+                FrameMarker_FindTrackables(state);
+                break;
         }
 
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
         mRenderer.end();
     }
 
-    // TODO bug : 一筆以上的模型，只要有模型離開視窗，則無法隱藏，必須全部辨識離開才會消失
     private void ImageTarget_FindTrackables(State state){
 
         if (state.getNumTrackableResults()>0){
@@ -117,7 +122,6 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
             for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
                 TrackableResult result = state.getTrackableResult(tIdx);
-
                 if (result == null)
                 {
                     mActivity.HideAllModel();
@@ -176,6 +180,43 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             }
         } else {
             mActivity.startFinderIfStopped();
+            mActivity.HideAllModel();
+        }
+    }
+
+    private void FrameMarker_FindTrackables(State state){
+        if (state.getNumTrackableResults()>0){
+
+            int marker_count = mActivity.getFrameMarkerCount();
+            HashMap<Integer, TrackableResult> recorder = new HashMap<>();
+
+            for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++)
+            {
+                TrackableResult result = state.getTrackableResult(tIdx);
+                if (result == null)
+                {
+                    mActivity.HideAllModel();
+                    return;
+                }
+                Marker marker = (Marker) ((MarkerResult)result).getTrackable();
+                int textureIndex = marker.getMarkerId();
+
+                for (int i=0; i<marker_count; ++i){
+                    if (i == textureIndex){
+                        recorder.put(i, result);
+                    }
+                }
+            }
+
+            for (int i=0; i<marker_count; ++i){
+                if (recorder.get(i)!=null){
+                    mActivity.setVisiableModelByIndex(i, true);
+                    renderAugmentation(recorder.get(i), i);
+                } else {
+                    mActivity.setVisiableModelByIndex(i, false);
+                }
+            }
+        } else {
             mActivity.HideAllModel();
         }
     }

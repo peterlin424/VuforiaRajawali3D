@@ -58,9 +58,9 @@ public class CloudRecoActivity extends BaseVuforiaActivity implements View.OnCli
         tempM3D.addTexture(R.drawable.u1);
         tempM3D.addTexture(R.drawable.u2);
         arrayList.add(tempM3D);
-        tempM3D.setObj_scale(0.5f);
-        tempM3D.setObj_translate_x(-100.0f);
-        tempM3D.setObj_translate_y(-80.0f);
+        tempM3D.setObj_scale(0.1f);
+        tempM3D.setObj_translate_x(-20.0f);
+        tempM3D.setObj_translate_y(-20.0f);
         tempM3D.setObj_rotate_angle(90.0f);
         this.setModel3DArrayList(arrayList);
     }

@@ -39,6 +39,10 @@
             android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
             android:screenOrientation="portrait" ></activity>
+        <activity android:name=".FrameMarkerActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" ></activity>
     </application>
 
 </manifest>
