@@ -101,7 +101,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     private ArrayList<String> CloudDataSet = new ArrayList<>();
 
     // FrameMarker
-    private static int FrameMarkerCount = 0;
+    private ArrayList<Integer> MarkerDataSetArray = new ArrayList<>();
     private Marker MarkerDataSet[];
 
     // Error message handling:
@@ -144,11 +144,11 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     }
 
     //FrameMarker
-    public static void setFrameMarkerCount(int frameMarkerCount) {
-        FrameMarkerCount = frameMarkerCount;
+    public ArrayList<Integer> getMarkerDataSetArray() {
+        return MarkerDataSetArray;
     }
-    public static int getFrameMarkerCount() {
-        return FrameMarkerCount;
+    public void setMarkerDataSetArray(ArrayList<Integer> markerDataSetArray) {
+        MarkerDataSetArray = markerDataSetArray;
     }
 
     /**
@@ -220,7 +220,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 }
                 break;
             case MODE_FrameMarkers:
-                if (FrameMarkerCount==0){
+                if (MarkerDataSetArray.size()==0){
                     new AlertDialog.Builder(this)
                             .setTitle("Init Error")
                             .setMessage("Please setFrameMarkerCount")
@@ -513,11 +513,13 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     if (markerTracker == null)
                         return false;
 
-                    MarkerDataSet = new Marker[FrameMarkerCount];
+                    MarkerDataSet = new Marker[MarkerDataSetArray.size()];
 
-                    for (int i=0; i<FrameMarkerCount; ++i){
-                        MarkerDataSet[i] = markerTracker.createFrameMarker(i, "Marker"+String.valueOf(i), new Vec2F(
-                                50, 50));
+                    for (int i=0; i<MarkerDataSetArray.size(); ++i){
+                        MarkerDataSet[i] = markerTracker.createFrameMarker(
+                                MarkerDataSetArray.get(i),
+                                "Marker"+String.valueOf(i),
+                                new Vec2F(50, 50));
                         if (MarkerDataSet[i] == null)
                         {
                             Log.e(LOGTAG, "Failed to create frame marker Q.");

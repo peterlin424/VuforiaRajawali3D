@@ -7,7 +7,6 @@ import android.opengl.Matrix;
 import com.qualcomm.vuforia.DataSet;
 import com.qualcomm.vuforia.Marker;
 import com.qualcomm.vuforia.MarkerResult;
-import com.qualcomm.vuforia.MarkerTracker;
 import com.qualcomm.vuforia.Matrix44F;
 import com.qualcomm.vuforia.Renderer;
 import com.qualcomm.vuforia.State;
@@ -187,7 +186,6 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
     private void FrameMarker_FindTrackables(State state){
         if (state.getNumTrackableResults()>0){
 
-            int marker_count = mActivity.getFrameMarkerCount();
             HashMap<Integer, TrackableResult> recorder = new HashMap<>();
 
             for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++)
@@ -199,16 +197,16 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     return;
                 }
                 Marker marker = (Marker) ((MarkerResult)result).getTrackable();
-                int textureIndex = marker.getMarkerId();
+                int id = marker.getMarkerId();
 
-                for (int i=0; i<marker_count; ++i){
-                    if (i == textureIndex){
+                for (int i=0; i<mActivity.getMarkerDataSetArray().size(); ++i){
+                    if (mActivity.getMarkerDataSetArray().get(i) == id){
                         recorder.put(i, result);
                     }
                 }
             }
 
-            for (int i=0; i<marker_count; ++i){
+            for (int i=0; i<mActivity.getMarkerDataSetArray().size(); ++i){
                 if (recorder.get(i)!=null){
                     mActivity.setVisiableModelByIndex(i, true);
                     renderAugmentation(recorder.get(i), i);

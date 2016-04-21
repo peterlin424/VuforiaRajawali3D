@@ -34,7 +34,10 @@ public class FrameMarkerActivity extends BaseVuforiaActivity implements View.OnC
         this.setARMode(BaseVuforiaActivity.MODE_FrameMarkers);
 
         // set local target library
-        this.setFrameMarkerCount(2);
+        ArrayList<Integer> frameIds = new ArrayList<>();
+        frameIds.add(3);
+        frameIds.add(4);
+        this.setMarkerDataSetArray(frameIds);
 
         // set max targets will show in same time
         this.setMAX_TARGETS_COUNT(2);
