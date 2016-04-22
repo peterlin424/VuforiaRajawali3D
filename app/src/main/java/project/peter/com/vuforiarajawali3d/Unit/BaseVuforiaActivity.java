@@ -17,9 +17,11 @@ import android.widget.RelativeLayout;
 
 import com.qualcomm.vuforia.CameraDevice;
 import com.qualcomm.vuforia.DataSet;
+import com.qualcomm.vuforia.ImageTarget;
 import com.qualcomm.vuforia.Marker;
 import com.qualcomm.vuforia.MarkerTracker;
 import com.qualcomm.vuforia.ObjectTracker;
+import com.qualcomm.vuforia.Rectangle;
 import com.qualcomm.vuforia.STORAGE_TYPE;
 import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.TargetFinder;
@@ -28,6 +30,7 @@ import com.qualcomm.vuforia.Trackable;
 import com.qualcomm.vuforia.Tracker;
 import com.qualcomm.vuforia.TrackerManager;
 import com.qualcomm.vuforia.Vec2F;
+import com.qualcomm.vuforia.VirtualButton;
 import com.qualcomm.vuforia.Vuforia;
 
 import org.rajawali3d.surface.IRajawaliSurface;
@@ -55,6 +58,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public final static int MODE_CubiodBox = 3;
     public final static int MODE_Cylinder = 4;
     private int MODE = MODE_ImageTarget;
+
+    private boolean PLUGIN_VirtualButtons = false;
 
     private int MAX_TARGETS_COUNT = 1;
 
@@ -120,6 +125,10 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public void setARMode(int mode){
         this.MODE = mode;
     }
+    public void setPLUGIN_VirtualButtons(boolean plugin){
+        this.PLUGIN_VirtualButtons = plugin;
+    }
+
     //ImageTarget
     public void setDatasetStrings(ArrayList<String> datasetStrings){
         this.mDatasetStrings = datasetStrings;
@@ -159,7 +168,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     }
 
     /**
-     *
+     * 控制 Rajawali
      * */
     public void HideAllModel(){
         BaseRajawaliRender.HideAllModel();
@@ -645,6 +654,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
                     mCurrentDataset = null;
                 }
+
+
                 break;
             case MODE_CloudReco:
             case MODE_FrameMarkers:
@@ -733,7 +744,6 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
         if (BaseVuforiaRender != null)
             mGlView.setRenderer(BaseVuforiaRender);
-
     }
 
     public void showErrorMessage(int errorCode, double errorTime, boolean finishActivityOnError)
@@ -901,6 +911,42 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_FrameMarkers:
                 break;
         }
+    }
+
+    // Create/destroy a Virtual Button at runtime
+    //
+    // Note: This will NOT work if the tracker is active!
+    boolean toggleVirtualButton(ImageTarget imageTarget, String name,
+                                float left, float top, float right, float bottom)
+    {
+        Log.d(LOGTAG, "toggleVirtualButton");
+
+        boolean buttonToggleSuccess = false;
+
+        VirtualButton virtualButton = imageTarget.getVirtualButton(name);
+        if (virtualButton != null)
+        {
+            Log.d(LOGTAG, "Destroying Virtual Button> " + name);
+            buttonToggleSuccess = imageTarget
+                    .destroyVirtualButton(virtualButton);
+        } else
+        {
+            Log.d(LOGTAG, "Creating Virtual Button> " + name);
+            Rectangle vbRectangle = new Rectangle(left, top, right, bottom);
+            VirtualButton virtualButton2 = imageTarget.createVirtualButton(
+                    name, vbRectangle);
+
+            if (virtualButton2 != null)
+            {
+                // This is just a showcase. The values used here a set by
+                // default on Virtual Button creation
+                virtualButton2.setEnabled(true);
+                virtualButton2.setSensitivity(VirtualButton.SENSITIVITY.MEDIUM);
+                buttonToggleSuccess = true;
+            }
+        }
+
+        return buttonToggleSuccess;
     }
 
     public void startFinderIfStopped()

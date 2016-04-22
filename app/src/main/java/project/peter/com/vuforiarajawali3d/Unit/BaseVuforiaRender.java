@@ -139,7 +139,10 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                 if (recorder.get(i)!=null){
                     mActivity.setVisiableModelByIndex(i, true);
+
                     renderAugmentation(recorder.get(i), i);
+
+
                 } else {
                     mActivity.setVisiableModelByIndex(i, false);
                 }
@@ -245,4 +248,6 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
         SampleUtils.checkGLError("Render Frame");
     }
+
+
 }

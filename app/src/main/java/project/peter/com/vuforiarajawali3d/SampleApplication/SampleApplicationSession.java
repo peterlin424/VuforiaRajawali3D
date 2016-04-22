@@ -68,7 +68,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
     
     // Stores the projection matrix to use for rendering purposes
     private Matrix44F mProjectionMatrix;
-    
+
     // Stores orientation
     private boolean mIsPortrait = false;
     
@@ -618,7 +618,7 @@ public class SampleApplicationSession implements UpdateCallbackInterface
         }
         
         config.setSize(new Vec2I(xSize, ySize));
-        
+
         Log.i(LOGTAG, "Configure Video Background : Video (" + vm.getWidth()
                 + " , " + vm.getHeight() + "), Screen (" + mScreenWidth + " , "
                 + mScreenHeight + "), mSize (" + xSize + " , " + ySize + ")");
@@ -633,5 +633,4 @@ public class SampleApplicationSession implements UpdateCallbackInterface
     {
         return mStarted;
     }
-    
 }
