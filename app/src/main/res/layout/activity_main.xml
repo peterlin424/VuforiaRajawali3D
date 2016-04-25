@@ -38,4 +38,12 @@
         android:id="@+id/bt_framemarker_target"
         android:layout_below="@+id/bt_cloud_reco"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Virtual Button"
+        android:id="@+id/bt_virtual_button"
+        android:layout_below="@+id/bt_framemarker_target"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

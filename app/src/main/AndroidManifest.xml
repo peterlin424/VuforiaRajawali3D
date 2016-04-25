@@ -38,11 +38,15 @@
         <activity android:name=".CloudRecoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" ></activity>
+            android:screenOrientation="portrait" />
         <activity android:name=".FrameMarkerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait" ></activity>
+            android:screenOrientation="portrait" />
+        <activity android:name=".VirtualButtonActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

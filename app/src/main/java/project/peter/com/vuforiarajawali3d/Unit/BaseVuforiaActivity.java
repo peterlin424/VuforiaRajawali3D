@@ -55,11 +55,10 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public final static int MODE_ImageTarget = 0;
     public final static int MODE_CloudReco = 1;
     public final static int MODE_FrameMarkers = 2;
-    public final static int MODE_CubiodBox = 3;
-    public final static int MODE_Cylinder = 4;
+    public final static int MODE_VirtualButton = 3;
+//    public final static int MODE_CubiodBox = 4;
+//    public final static int MODE_Cylinder = 5;
     private int MODE = MODE_ImageTarget;
-
-    private boolean PLUGIN_VirtualButtons = false;
 
     private int MAX_TARGETS_COUNT = 1;
 
@@ -109,6 +108,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     private ArrayList<Integer> MarkerDataSetArray = new ArrayList<>();
     private Marker MarkerDataSet[];
 
+    // Virtual Button
+    private ArrayList<String[]> VirtualButtonName = new ArrayList<>();
+
     // Error message handling:
     private int mlastErrorCode = 0;
     private int mInitErrorCode = 0;
@@ -124,9 +126,6 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
      * */
     public void setARMode(int mode){
         this.MODE = mode;
-    }
-    public void setPLUGIN_VirtualButtons(boolean plugin){
-        this.PLUGIN_VirtualButtons = plugin;
     }
 
     //ImageTarget
@@ -158,6 +157,14 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     }
     public void setMarkerDataSetArray(ArrayList<Integer> markerDataSetArray) {
         MarkerDataSetArray = markerDataSetArray;
+    }
+
+    //VirtualButton
+    public void setVirtualButtonName(ArrayList<String[]> vbName){
+        this.VirtualButtonName = vbName;
+    }
+    public ArrayList<String[]> getVirtualButtonName(){
+       return VirtualButtonName;
     }
 
     /**
@@ -242,6 +249,19 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                             .show();
                 }
                 break;
+            case MODE_VirtualButton:
+                if (VirtualButtonName.size()==0){
+                    new AlertDialog.Builder(this)
+                            .setTitle("Init Error")
+                            .setMessage("Please setVirtualButton")
+                            .setPositiveButton("cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    BaseVuforiaActivity.this.finish();
+                                }
+                            })
+                            .show();
+                }
         }
 
         vuforiaAppSession = new SampleApplicationSession(this);
@@ -415,6 +435,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         switch (MODE){
             case MODE_ImageTarget:
             case MODE_CloudReco:
+            case MODE_VirtualButton:
                 Tracker tracker = trackerManager.initTracker(ObjectTracker.getClassType());
                 if (tracker == null)
                 {
@@ -456,24 +477,33 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         try {
             switch (MODE){
                 case MODE_ImageTarget:
+                case MODE_VirtualButton:
                     ObjectTracker objectTracker = (ObjectTracker) trackerManager
                             .getTracker(ObjectTracker.getClassType());
-                    if (objectTracker == null)
+                    if (objectTracker == null){
+                        Log.d(LOGTAG, "Failed to load tracking data set because the ObjectTracker has not been initialized.");
                         return false;
+                    }
 
-                    if (mCurrentDataset == null)
+                    if (mCurrentDataset == null){
+                        Log.d(LOGTAG, "Failed to create a new tracking data.");
                         mCurrentDataset = objectTracker.createDataSet();
+                    }
 
                     if (mCurrentDataset == null)
                         return false;
 
                     if (!mCurrentDataset.load(
                             mDatasetStrings.get(mCurrentDatasetSelectionIndex),
-                            STORAGE_TYPE.STORAGE_APPRESOURCE))
+                            STORAGE_TYPE.STORAGE_APPRESOURCE)){
+                        Log.d(LOGTAG, "Failed to load data set.");
                         return false;
+                    }
 
-                    if (!objectTracker.activateDataSet(mCurrentDataset))
+                    if (!objectTracker.activateDataSet(mCurrentDataset)){
+                        Log.d(LOGTAG, "Failed to activate data set.");
                         return false;
+                    }
 
                     int numTrackables = mCurrentDataset.getNumTrackables();
                     for (int count = 0; count < numTrackables; count++)
@@ -542,6 +572,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             e.printStackTrace();
         }
 
+        Log.d(LOGTAG, "Successfully loaded and activated data set.");
         return true;
     }
 
@@ -555,6 +586,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         Vuforia.setHint(com.qualcomm.vuforia.HINT.HINT_MAX_SIMULTANEOUS_IMAGE_TARGETS, MAX_TARGETS_COUNT);
         switch (MODE){
             case MODE_ImageTarget:
+            case MODE_VirtualButton:
                 Tracker tracker = TrackerManager.getInstance().getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -591,6 +623,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
         switch (MODE){
             case MODE_ImageTarget:
+            case MODE_VirtualButton:
                 Tracker tracker = trackerManager.getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -636,25 +669,32 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         TrackerManager tManager = TrackerManager.getInstance();
         switch (MODE){
             case MODE_ImageTarget:
+            case MODE_VirtualButton:
                 ObjectTracker objectTracker = (ObjectTracker) tManager
                         .getTracker(ObjectTracker.getClassType());
-                if (objectTracker == null)
+                if (objectTracker == null){
+                    Log.d(LOGTAG, "Failed to destroy the tracking data set because the ObjectTracker has not been initialized.");
                     return false;
+                }
 
                 if (mCurrentDataset != null && mCurrentDataset.isActive())
                 {
                     if (objectTracker.getActiveDataSet().equals(mCurrentDataset)
                             && !objectTracker.deactivateDataSet(mCurrentDataset))
                     {
+                        Log.d(LOGTAG, "Failed to destroy the tracking data set because the data set could not be deactivated.");
                         result = false;
                     } else if (!objectTracker.destroyDataSet(mCurrentDataset))
                     {
+                        Log.d(LOGTAG, "Failed to destroy the tracking data set.");
                         result = false;
                     }
 
+                    if (result)
+                        Log.d(LOGTAG, "Successfully destroyed the data set.");
+
                     mCurrentDataset = null;
                 }
-
 
                 break;
             case MODE_CloudReco:
@@ -740,6 +780,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_FrameMarkers:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_FrameMarkers);
                 break;
+            case MODE_VirtualButton:
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_VirtualButton);
         }
 
         if (BaseVuforiaRender != null)
@@ -872,6 +914,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
         switch (MODE){
             case MODE_ImageTarget:
+            case MODE_FrameMarkers:
+            case MODE_VirtualButton:
                 break;
             case MODE_CloudReco:
                 TrackerManager trackerManager = TrackerManager.getInstance();
@@ -908,45 +952,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     }
                 }
                 break;
-            case MODE_FrameMarkers:
-                break;
         }
-    }
-
-    // Create/destroy a Virtual Button at runtime
-    //
-    // Note: This will NOT work if the tracker is active!
-    boolean toggleVirtualButton(ImageTarget imageTarget, String name,
-                                float left, float top, float right, float bottom)
-    {
-        Log.d(LOGTAG, "toggleVirtualButton");
-
-        boolean buttonToggleSuccess = false;
-
-        VirtualButton virtualButton = imageTarget.getVirtualButton(name);
-        if (virtualButton != null)
-        {
-            Log.d(LOGTAG, "Destroying Virtual Button> " + name);
-            buttonToggleSuccess = imageTarget
-                    .destroyVirtualButton(virtualButton);
-        } else
-        {
-            Log.d(LOGTAG, "Creating Virtual Button> " + name);
-            Rectangle vbRectangle = new Rectangle(left, top, right, bottom);
-            VirtualButton virtualButton2 = imageTarget.createVirtualButton(
-                    name, vbRectangle);
-
-            if (virtualButton2 != null)
-            {
-                // This is just a showcase. The values used here a set by
-                // default on Virtual Button creation
-                virtualButton2.setEnabled(true);
-                virtualButton2.setSensitivity(VirtualButton.SENSITIVITY.MEDIUM);
-                buttonToggleSuccess = true;
-            }
-        }
-
-        return buttonToggleSuccess;
     }
 
     public void startFinderIfStopped()

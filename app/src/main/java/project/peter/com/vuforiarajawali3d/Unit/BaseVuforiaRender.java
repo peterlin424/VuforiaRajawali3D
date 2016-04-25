@@ -3,8 +3,10 @@ package project.peter.com.vuforiarajawali3d.Unit;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
+import android.util.Log;
 
 import com.qualcomm.vuforia.DataSet;
+import com.qualcomm.vuforia.ImageTargetResult;
 import com.qualcomm.vuforia.Marker;
 import com.qualcomm.vuforia.MarkerResult;
 import com.qualcomm.vuforia.Matrix44F;
@@ -13,6 +15,8 @@ import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.Tool;
 import com.qualcomm.vuforia.TrackableResult;
 import com.qualcomm.vuforia.VIDEO_BACKGROUND_REFLECTION;
+import com.qualcomm.vuforia.VirtualButton;
+import com.qualcomm.vuforia.VirtualButtonResult;
 import com.qualcomm.vuforia.Vuforia;
 
 import java.util.ArrayList;
@@ -106,6 +110,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             case BaseVuforiaActivity.MODE_FrameMarkers:
                 FrameMarker_FindTrackables(state);
                 break;
+            case BaseVuforiaActivity.MODE_VirtualButton:
+                VirtualButton_FindTrackables(state);
+                break;
         }
 
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -141,7 +148,6 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     mActivity.setVisiableModelByIndex(i, true);
 
                     renderAugmentation(recorder.get(i), i);
-
 
                 } else {
                     mActivity.setVisiableModelByIndex(i, false);
@@ -222,9 +228,50 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         }
     }
 
+    private void VirtualButton_FindTrackables(State state){
+        if (state.getNumTrackableResults()>0){
+
+            ArrayList<String[]> buttons = mActivity.getVirtualButtonName();
+            DataSet temp_dataset = mActivity.getmCurrentDataset();
+            HashMap<Integer, TrackableResult> recorder = new HashMap<>();
+
+            for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
+                TrackableResult result = state.getTrackableResult(tIdx);
+                if (result == null)
+                {
+                    mActivity.HideAllModel();
+                    return;
+                }
+//                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
+                for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                    if (temp_dataset.getTrackable(i).getName().equals(result.getTrackable().getName())){
+                        recorder.put(i, result);
+                    }
+                }
+            }
+
+            for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                if (recorder.get(i)!=null){
+                    mActivity.setVisiableModelByIndex(i, true);
+
+                    renderAugmentation(recorder.get(i), i);
+                    if (buttons.size()!=0)
+                        drawVirtualButton(recorder.get(i), i, buttons.get(i));
+                    else
+                        Log.d(LOGTAG, "Please set VirtualButtonName");
+                } else {
+                    mActivity.setVisiableModelByIndex(i, false);
+                }
+            }
+        } else {
+            mActivity.HideAllModel();
+        }
+    }
+
     private void renderAugmentation(TrackableResult trackableResult, int textureIndex)
     {
-
         // 取得辨識變形矩陣
         Matrix44F modelViewMatrix_Vuforia = Tool
                 .convertPose2GLMatrix(trackableResult.getPose());
@@ -249,5 +296,36 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         SampleUtils.checkGLError("Render Frame");
     }
 
+    private void drawVirtualButton(TrackableResult trackableResult, int textureIndex, String[] buttons){
+        ImageTargetResult imageTargetResult = (ImageTargetResult) trackableResult;
 
+        for (int i = 0; i < imageTargetResult.getNumVirtualButtons(); ++i)
+        {
+            VirtualButtonResult buttonResult = imageTargetResult
+                    .getVirtualButtonResult(i);
+            VirtualButton button = buttonResult.getVirtualButton();
+
+            int buttonIndex = 0;
+            // Run through button name array to find button index
+            for (int j = 0; j < buttons.length; ++j)
+            {
+                if (button.getName().compareTo(
+                        buttons[j]) == 0)
+                {
+                    buttonIndex = j;
+                    break;
+                }
+            }
+
+            // If the button is pressed, than use this texture:
+            if (buttonResult.isPressed())
+            {
+                // TODO 得知模型按鈕觸碰事件
+                Log.d(LOGTAG, "target id : " + textureIndex +
+                        ", buttonIndex : " + String.valueOf(buttonIndex + 1));
+            }
+
+            //TODO 按鈕框處理
+        }
+    }
 }

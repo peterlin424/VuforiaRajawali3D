@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         Button bt_framemarker_target = (Button)findViewById(R.id.bt_framemarker_target);
         bt_framemarker_target.setOnClickListener(this);
+
+        Button bt_virtual_button = (Button)findViewById(R.id.bt_virtual_button);
+        bt_virtual_button.setOnClickListener(this);
     }
 
     @Override
@@ -35,6 +38,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 break;
             case R.id.bt_framemarker_target:
                 startActivity(new Intent(MainActivity.this, FrameMarkerActivity.class));
+                break;
+            case R.id.bt_virtual_button:
+                startActivity(new Intent(MainActivity.this, VirtualButtonActivity.class));
                 break;
         }
     }

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
+  <Tracking>
+    <ImageTarget name="TestTarget" size="500.000000 312.121216" >
+      <VirtualButton name="red" sensitivity="HIGH" rectangle="-108.68 -53.52 -75.75 -80.87" enabled="true" />
+      <VirtualButton name="blue" sensitivity="HIGH" rectangle="-45.28 -53.52 -12.35 -80.87" enabled="true" />
+      <VirtualButton name="yellow" sensitivity="HIGH" rectangle="14.82 -53.52 47.75 -80.87" enabled="true" />
+      <VirtualButton name="green" sensitivity="HIGH" rectangle="76.57 -53.52 109.50 -80.87" enabled="true" />
+    </ImageTarget>
+  </Tracking>
+</QCARConfig>
