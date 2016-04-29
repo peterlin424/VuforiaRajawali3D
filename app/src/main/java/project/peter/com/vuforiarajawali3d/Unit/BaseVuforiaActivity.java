@@ -8,16 +8,19 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.qualcomm.vuforia.CameraDevice;
 import com.qualcomm.vuforia.DataSet;
 import com.qualcomm.vuforia.ImageTarget;
+import com.qualcomm.vuforia.ImageTargetBuilder;
 import com.qualcomm.vuforia.Marker;
 import com.qualcomm.vuforia.MarkerTracker;
 import com.qualcomm.vuforia.ObjectTracker;
@@ -37,6 +40,7 @@ import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import project.peter.com.vuforiarajawali3d.R;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationControl;
@@ -44,6 +48,7 @@ import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationEx
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
 import project.peter.com.vuforiarajawali3d.SampleApplication.utils.LoadingDialogHandler;
 import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleApplicationGLView;
+import project.peter.com.vuforiarajawali3d.SampleApplication.utils.Texture;
 
 /**
  * Created by linweijie on 4/13/16.
@@ -56,8 +61,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public final static int MODE_CloudReco = 1;
     public final static int MODE_FrameMarkers = 2;
     public final static int MODE_VirtualButton = 3;
-//    public final static int MODE_CubiodBox = 4;
-//    public final static int MODE_Cylinder = 5;
+    public final static int MODE_UserDefinedTarget = 4;
+//    public final static int MODE_CubiodBox = 5;
+//    public final static int MODE_Cylinder = 6;
     private int MODE = MODE_ImageTarget;
 
     private int MAX_TARGETS_COUNT = 1;
@@ -110,6 +116,15 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
     // Virtual Button
     private ArrayList<String[]> VirtualButtonName = new ArrayList<>();
+    private VirtualButtonCallback buttonCallback;
+
+    // UserDefinedTarget
+    private AlertDialog mDialog;    // Alert dialog for displaying SDK errors
+    public RefFreeFrame refFreeFrame;
+    private View mBottomBar;
+    private View mCameraButton;
+    private int targetBuilderCounter = 1;
+    private DataSet dataSetUserDef = null;
 
     // Error message handling:
     private int mlastErrorCode = 0;
@@ -126,6 +141,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
      * */
     public void setARMode(int mode){
         this.MODE = mode;
+    }
+    public void setButtonCallback(VirtualButtonCallback callback){
+        this.buttonCallback = callback;
     }
 
     //ImageTarget
@@ -167,6 +185,10 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
        return VirtualButtonName;
     }
 
+    //UserDefined
+    public DataSet getDataSetUserDef(){
+        return dataSetUserDef;
+    }
     /**
      * onCreate 後所需的設定：顯示 3D 模型 list, 切換要顯示的 3D 模型
      * */
@@ -418,7 +440,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     @Override
     public void onConfigurationChanged(Configuration config)
     {
-//        Log.d(LOGTAG, "onConfigurationChanged");
+        Log.d(LOGTAG, "onConfigurationChanged");
         super.onConfigurationChanged(config);
 
         vuforiaAppSession.onConfigurationChanged();
@@ -436,6 +458,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_ImageTarget:
             case MODE_CloudReco:
             case MODE_VirtualButton:
+            case MODE_UserDefinedTarget:
                 Tracker tracker = trackerManager.initTracker(ObjectTracker.getClassType());
                 if (tracker == null)
                 {
@@ -567,6 +590,31 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     }
                     Log.i(LOGTAG, "Successfully initialized MarkerTracker.");
                     break;
+                case MODE_UserDefinedTarget:
+                    // Get the image tracker:
+                    ObjectTracker objectTracker_udt = (ObjectTracker) trackerManager
+                            .getTracker(ObjectTracker.getClassType());
+                    if (objectTracker_udt == null)
+                    {
+                        Log.d(
+                                LOGTAG,
+                                "Failed to load tracking data set because the ObjectTracker has not been initialized.");
+                        return false;
+                    }
+                    // Create the data set:
+                    dataSetUserDef = objectTracker_udt.createDataSet();
+                    if (dataSetUserDef == null)
+                    {
+                        Log.d(LOGTAG, "Failed to create a new tracking data.");
+                        return false;
+                    }
+
+                    if (!objectTracker_udt.activateDataSet(dataSetUserDef))
+                    {
+                        Log.d(LOGTAG, "Failed to activate data set.");
+                        return false;
+                    }
+                    break;
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -587,6 +635,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         switch (MODE){
             case MODE_ImageTarget:
             case MODE_VirtualButton:
+            case MODE_UserDefinedTarget:
                 Tracker tracker = TrackerManager.getInstance().getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -624,6 +673,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         switch (MODE){
             case MODE_ImageTarget:
             case MODE_VirtualButton:
+            case MODE_UserDefinedTarget:
                 Tracker tracker = trackerManager.getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -700,6 +750,38 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_CloudReco:
             case MODE_FrameMarkers:
                 break;
+            case MODE_UserDefinedTarget:
+                ObjectTracker objectTracker_udt = (ObjectTracker) tManager
+                        .getTracker(ObjectTracker.getClassType());
+                if (objectTracker_udt == null)
+                {
+                    result = false;
+                    Log.d(
+                            LOGTAG,
+                            "Failed to destroy the tracking data set because the ObjectTracker has not been initialized.");
+                }
+
+                if (dataSetUserDef != null)
+                {
+                    if (objectTracker_udt.getActiveDataSet() != null
+                            && !objectTracker_udt.deactivateDataSet(dataSetUserDef))
+                    {
+                        Log.d(
+                                LOGTAG,
+                                "Failed to destroy the tracking data set because the data set could not be deactivated.");
+                        result = false;
+                    }
+
+                    if (!objectTracker_udt.destroyDataSet(dataSetUserDef))
+                    {
+                        Log.d(LOGTAG, "Failed to destroy the tracking data set.");
+                        result = false;
+                    }
+
+                    Log.d(LOGTAG, "Successfully destroyed the data set.");
+                    dataSetUserDef = null;
+                }
+                break;
         }
         return result;
     }
@@ -707,6 +789,10 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     @Override
     public boolean doDeinitTrackers() {
         boolean result = true;
+
+        if (MODE == MODE_UserDefinedTarget && refFreeFrame != null)
+            refFreeFrame.deInit();
+
         TrackerManager.getInstance().deinitTracker(ObjectTracker.getClassType());
         return result;
     }
@@ -760,6 +846,11 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     // Initializes AR application components.
     private void initApplicationAR()
     {
+        if (MODE == BaseVuforiaActivity.MODE_UserDefinedTarget){
+            refFreeFrame = new RefFreeFrame(this, vuforiaAppSession);
+            refFreeFrame.init();
+        }
+
         // Create OpenGL ES view:
         int depthSize = 16;
         int stencilSize = 0;
@@ -782,10 +873,17 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 break;
             case MODE_VirtualButton:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_VirtualButton);
+                BaseVuforiaRender.setButtonCallback(buttonCallback);
+            case MODE_UserDefinedTarget:
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_UserDefinedTarget);
+                break;
         }
 
         if (BaseVuforiaRender != null)
             mGlView.setRenderer(BaseVuforiaRender);
+
+        if (MODE == BaseVuforiaActivity.MODE_UserDefinedTarget)
+            addOverlayView(true);
     }
 
     public void showErrorMessage(int errorCode, double errorTime, boolean finishActivityOnError)
@@ -952,6 +1050,51 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     }
                 }
                 break;
+            case MODE_UserDefinedTarget:
+                TrackerManager trackerManager_udt = TrackerManager.getInstance();
+                ObjectTracker objectTracker_udt = (ObjectTracker) trackerManager_udt
+                        .getTracker(ObjectTracker.getClassType());
+
+                if (refFreeFrame.hasNewTrackableSource())
+                {
+                    Log.d(LOGTAG,
+                            "Attempting to transfer the trackable source to the dataset");
+
+                    // Deactivate current dataset
+                    objectTracker_udt.deactivateDataSet(objectTracker_udt.getActiveDataSet());
+
+                    // Clear the oldest target if the dataset is full or the dataset
+                    // already contains five user-defined targets.
+                    if (dataSetUserDef.hasReachedTrackableLimit()
+                            || dataSetUserDef.getNumTrackables() >= 5)
+                        dataSetUserDef.destroy(dataSetUserDef.getTrackable(0));
+
+                    if (mExtendedTracking && dataSetUserDef.getNumTrackables() > 0)
+                    {
+                        // We need to stop the extended tracking for the previous target
+                        // so we can enable it for the new one
+                        int previousCreatedTrackableIndex =
+                                dataSetUserDef.getNumTrackables() - 1;
+
+                        objectTracker_udt.resetExtendedTracking();
+                        dataSetUserDef.getTrackable(previousCreatedTrackableIndex)
+                                .stopExtendedTracking();
+                    }
+
+                    // Add new trackable source
+                    Trackable trackable = dataSetUserDef
+                            .createTrackable(refFreeFrame.getNewTrackableSource());
+
+                    // Reactivate current dataset
+                    objectTracker_udt.activateDataSet(dataSetUserDef);
+
+                    if (mExtendedTracking)
+                    {
+                        trackable.startExtendedTracking();
+                    }
+
+                }
+                break;
         }
     }
 
@@ -993,4 +1136,208 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         }
     }
 
+    // Shows error message in a system dialog box
+    private void showErrorDialog()
+    {
+        if (mDialog != null && mDialog.isShowing())
+            mDialog.dismiss();
+
+        mDialog = new AlertDialog.Builder(this).create();
+        DialogInterface.OnClickListener clickListener = new DialogInterface.OnClickListener()
+        {
+            public void onClick(DialogInterface dialog, int which)
+            {
+                dialog.dismiss();
+            }
+        };
+
+        mDialog.setButton(DialogInterface.BUTTON_POSITIVE,
+                getString(R.string.button_OK), clickListener);
+
+        mDialog.setTitle("Low Quality Image");
+
+        String message = "The image has very little detail, please try another.";
+
+        // Show dialog box with error message:
+        mDialog.setMessage(message);
+        mDialog.show();
+    }
+
+    // Shows error message in a system dialog box on the UI thread
+    void showErrorDialogInUIThread()
+    {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                showErrorDialog();
+            }
+        });
+    }
+
+    // Callback function called when the target creation finished
+    void targetCreated()
+    {
+        // Hides the loading dialog
+        loadingDialogHandler
+                .sendEmptyMessage(LoadingDialogHandler.HIDE_LOADING_DIALOG);
+
+        if (refFreeFrame != null)
+        {
+            refFreeFrame.reset();
+        }
+
+    }
+
+
+    // Creates a texture given the filename
+    Texture createTexture(String nName)
+    {
+        return Texture.loadTextureFromApk(nName, getAssets());
+    }
+
+    // Adds the Overlay view to the GLView
+    private void addOverlayView(boolean initLayout)
+    {
+        // Inflates the Overlay Layout to be displayed above the Camera View
+        LayoutInflater inflater = LayoutInflater.from(this);
+        mUILayout = (RelativeLayout) inflater.inflate(
+                R.layout.camera_overlay_udt, null, false);
+
+        mUILayout.setVisibility(View.VISIBLE);
+
+        // If this is the first time that the application runs then the
+        // uiLayout background is set to BLACK color, will be set to
+        // transparent once the SDK is initialized and camera ready to draw
+        if (initLayout)
+        {
+            mUILayout.setBackgroundColor(Color.BLACK);
+        }
+
+        // Adds the inflated layout to the view
+        addContentView(mUILayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+
+        // Gets a reference to the bottom navigation bar
+        mBottomBar = mUILayout.findViewById(R.id.bottom_bar);
+
+        // Gets a reference to the Camera button
+        mCameraButton = mUILayout.findViewById(R.id.camera_button);
+
+        // Gets a reference to the loading dialog container
+        loadingDialogHandler.mLoadingDialogContainer = mUILayout
+                .findViewById(R.id.loading_layout);
+
+        startUserDefinedTargets();
+        initializeBuildTargetModeViews();
+
+        mUILayout.bringToFront();
+    }
+
+    boolean startUserDefinedTargets()
+    {
+        Log.d(LOGTAG, "startUserDefinedTargets");
+
+        TrackerManager trackerManager = TrackerManager.getInstance();
+        ObjectTracker objectTracker = (ObjectTracker) (trackerManager
+                .getTracker(ObjectTracker.getClassType()));
+        if (objectTracker != null)
+        {
+            ImageTargetBuilder targetBuilder = objectTracker
+                    .getImageTargetBuilder();
+
+            if (targetBuilder != null)
+            {
+                // if needed, stop the target builder
+                if (targetBuilder.getFrameQuality() != ImageTargetBuilder.FRAME_QUALITY.FRAME_QUALITY_NONE)
+                    targetBuilder.stopScan();
+
+                objectTracker.stop();
+
+                targetBuilder.startScan();
+
+            }
+        } else
+            return false;
+
+        return true;
+    }
+
+    // Initialize views
+    private void initializeBuildTargetModeViews()
+    {
+        // Shows the bottom bar
+        mBottomBar.setVisibility(View.VISIBLE);
+        mCameraButton.setVisibility(View.VISIBLE);
+    }
+
+    // Button Camera clicked
+    public void onCameraClick(View v)
+    {
+        if (isUserDefinedTargetsRunning())
+        {
+            // Shows the loading dialog
+            loadingDialogHandler
+                    .sendEmptyMessage(LoadingDialogHandler.SHOW_LOADING_DIALOG);
+
+            // Builds the new target
+            startBuild();
+        }
+    }
+
+    boolean isUserDefinedTargetsRunning()
+    {
+        TrackerManager trackerManager = TrackerManager.getInstance();
+        ObjectTracker objectTracker = (ObjectTracker) trackerManager
+                .getTracker(ObjectTracker.getClassType());
+
+        if (objectTracker != null)
+        {
+            ImageTargetBuilder targetBuilder = objectTracker
+                    .getImageTargetBuilder();
+            if (targetBuilder != null)
+            {
+                Log.e(LOGTAG, "Quality> " + targetBuilder.getFrameQuality());
+                return (targetBuilder.getFrameQuality() != ImageTargetBuilder.FRAME_QUALITY.FRAME_QUALITY_NONE) ? true
+                        : false;
+            }
+        }
+
+        return false;
+    }
+
+    void startBuild()
+    {
+        TrackerManager trackerManager = TrackerManager.getInstance();
+        ObjectTracker objectTracker = (ObjectTracker) trackerManager
+                .getTracker(ObjectTracker.getClassType());
+
+        if (objectTracker != null)
+        {
+            ImageTargetBuilder targetBuilder = objectTracker
+                    .getImageTargetBuilder();
+            if (targetBuilder != null)
+            {
+                if (targetBuilder.getFrameQuality() == ImageTargetBuilder.FRAME_QUALITY.FRAME_QUALITY_LOW)
+                {
+                    showErrorDialogInUIThread();
+                }
+
+                String name;
+                do
+                {
+                    name = "UserTarget-" + targetBuilderCounter;
+                    Log.d(LOGTAG, "TRYING " + name);
+                    targetBuilderCounter++;
+                } while (!targetBuilder.build(name, 320.0f));
+
+                refFreeFrame.setCreating();
+            }
+        }
+    }
+
+    void updateRendering()
+    {
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        refFreeFrame.initGL(metrics.widthPixels, metrics.heightPixels);
+    }
 }

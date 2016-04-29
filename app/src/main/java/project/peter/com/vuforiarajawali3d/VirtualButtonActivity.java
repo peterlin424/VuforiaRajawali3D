@@ -1,6 +1,7 @@
 package project.peter.com.vuforiarajawali3d;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -10,6 +11,7 @@ import java.util.ArrayList;
 
 import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
 import project.peter.com.vuforiarajawali3d.Unit.Model3D;
+import project.peter.com.vuforiarajawali3d.Unit.VirtualButtonCallback;
 
 /**
  * Created by linweijie on 4/25/16.
@@ -32,14 +34,20 @@ public class VirtualButtonActivity extends BaseVuforiaActivity implements View.O
     private void initAR(){
         // set mode
         this.setARMode(BaseVuforiaActivity.MODE_VirtualButton);
-
+        this.setButtonCallback(new VirtualButtonCallback() {
+            @Override
+            public void isPressed(int targetIndex, int buttonIndex) {
+                Log.d("VirtualButtonActivity", "target id : " + targetIndex +
+                        ", buttonIndex : " + String.valueOf(buttonIndex + 1));
+            }
+        });
         // set local target library
         ArrayList<String> dataString = new ArrayList<>();
         dataString.add("DemoDatabase.xml");
         this.setDatasetStrings(dataString);
 
         ArrayList<String[]> vb = new ArrayList<>();
-        vb.add(new String[]{"red", "blue", "yellow", "green"});
+        vb.add(new String[]{"red", "green"});
         this.setVirtualButtonName(vb);
 
         // set max targets will show in same time
@@ -51,12 +59,12 @@ public class VirtualButtonActivity extends BaseVuforiaActivity implements View.O
         ArrayList<Model3D> arrayList = new ArrayList<>();
 
         Model3D tempM3D = new Model3D(this, R.raw.watch_obj);
-        tempM3D.addTexture(R.drawable.watch001);
-        tempM3D.addTexture(R.drawable.watch002);
-        tempM3D.setObj_scale(10.0f);
+//        tempM3D.addTexture(R.drawable.watch001);
+//        tempM3D.addTexture(R.drawable.watch002);
+        tempM3D.setObj_scale(30.0f);
         tempM3D.setObj_translate_x(0.0f);
         tempM3D.setObj_translate_y(0.0f);
-        tempM3D.setObj_rotate_angle(0.0f);
+        tempM3D.setObj_rotate_angle(90.0f);
         arrayList.add(tempM3D);
 
         this.setModel3DArrayList(arrayList);

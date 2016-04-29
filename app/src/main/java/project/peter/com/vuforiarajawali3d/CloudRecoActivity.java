@@ -46,8 +46,8 @@ public class CloudRecoActivity extends BaseVuforiaActivity implements View.OnCli
         ArrayList<Model3D> arrayList = new ArrayList<>();
 
         Model3D tempM3D = new Model3D(this, R.raw.watch_obj);
-        tempM3D.addTexture(R.drawable.watch001);
-        tempM3D.addTexture(R.drawable.watch002);
+//        tempM3D.addTexture(R.drawable.watch001);
+//        tempM3D.addTexture(R.drawable.watch002);
         tempM3D.setObj_scale(10.0f);
         tempM3D.setObj_translate_x(0.0f);
         tempM3D.setObj_translate_y(0.0f);
@@ -55,8 +55,8 @@ public class CloudRecoActivity extends BaseVuforiaActivity implements View.OnCli
         arrayList.add(tempM3D);
 
         tempM3D = new Model3D(this, R.raw.roadcar_obj);
-        tempM3D.addTexture(R.drawable.u1);
-        tempM3D.addTexture(R.drawable.u2);
+//        tempM3D.addTexture(R.drawable.u1);
+//        tempM3D.addTexture(R.drawable.u2);
         arrayList.add(tempM3D);
         tempM3D.setObj_scale(0.1f);
         tempM3D.setObj_translate_x(-20.0f);

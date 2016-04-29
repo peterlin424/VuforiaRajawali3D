@@ -46,4 +46,12 @@
         android:id="@+id/bt_virtual_button"
         android:layout_below="@+id/bt_framemarker_target"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="UserDefined Target"
+        android:id="@+id/bt_userdefined_target"
+        android:layout_below="@+id/bt_virtual_button"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>

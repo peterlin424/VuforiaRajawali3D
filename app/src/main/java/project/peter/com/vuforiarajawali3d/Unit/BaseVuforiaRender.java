@@ -43,8 +43,13 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
     private Renderer mRenderer;
 
+    private VirtualButtonCallback buttonCallback;
+
     public void setARMode(int mode){
         this.MODE = mode;
+    }
+    public void setButtonCallback(VirtualButtonCallback callback){
+        this.buttonCallback = callback;
     }
 
     public BaseVuforiaRender(BaseVuforiaActivity activity,
@@ -65,6 +70,12 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        Log.d(LOGTAG, "GLRenderer.onSurfaceChanged");
+        if (MODE == BaseVuforiaActivity.MODE_UserDefinedTarget){
+            // Call function to update rendering when render surface
+            // parameters have changed:
+            mActivity.updateRendering();
+        }
         vuforiaAppSession.onSurfaceChanged(width, height);
     }
 
@@ -112,6 +123,11 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 break;
             case BaseVuforiaActivity.MODE_VirtualButton:
                 VirtualButton_FindTrackables(state);
+                break;
+            case BaseVuforiaActivity.MODE_UserDefinedTarget:
+                // Render the RefFree UI elements depending on the current state
+                mActivity.refFreeFrame.render();
+                userDefinedTarget(state);
                 break;
         }
 
@@ -193,6 +209,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
     }
 
     private void FrameMarker_FindTrackables(State state){
+
         if (state.getNumTrackableResults()>0){
 
             HashMap<Integer, TrackableResult> recorder = new HashMap<>();
@@ -229,6 +246,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
     }
 
     private void VirtualButton_FindTrackables(State state){
+
         if (state.getNumTrackableResults()>0){
 
             ArrayList<String[]> buttons = mActivity.getVirtualButtonName();
@@ -270,6 +288,46 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         }
     }
 
+    private void userDefinedTarget(State state){
+
+        if (state.getNumTrackableResults()>0){
+
+            DataSet temp_dataset = mActivity.getDataSetUserDef();
+            HashMap<Integer, TrackableResult> recorder = new HashMap<>();
+
+            for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
+                TrackableResult result = state.getTrackableResult(tIdx);
+                if (result == null)
+                {
+                    mActivity.HideAllModel();
+                    return;
+                }
+//                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
+                for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                    if (temp_dataset.getTrackable(i).getName().equals(result.getTrackable().getName())){
+                        recorder.put(i, result);
+                    }
+                }
+            }
+
+            for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                if (recorder.get(i)!=null){
+                    mActivity.setVisiableModelByIndex(i, true);
+
+                    renderAugmentation(recorder.get(i), i);
+
+                } else {
+                    mActivity.setVisiableModelByIndex(i, false);
+                }
+            }
+        } else {
+            mActivity.HideAllModel();
+        }
+    }
+
+
     private void renderAugmentation(TrackableResult trackableResult, int textureIndex)
     {
         // 取得辨識變形矩陣
@@ -296,6 +354,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         SampleUtils.checkGLError("Render Frame");
     }
 
+
     private void drawVirtualButton(TrackableResult trackableResult, int textureIndex, String[] buttons){
         ImageTargetResult imageTargetResult = (ImageTargetResult) trackableResult;
 
@@ -320,12 +379,13 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             // If the button is pressed, than use this texture:
             if (buttonResult.isPressed())
             {
-                // TODO 得知模型按鈕觸碰事件
-                Log.d(LOGTAG, "target id : " + textureIndex +
-                        ", buttonIndex : " + String.valueOf(buttonIndex + 1));
+                if (buttonCallback!=null)
+                    buttonCallback.isPressed(textureIndex, buttonIndex);
             }
 
             //TODO 按鈕框處理
         }
     }
+
+
 }
