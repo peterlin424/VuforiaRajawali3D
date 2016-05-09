@@ -299,6 +299,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 "droid");
 
         // init rajawali view
+        // TODO RajawaliSurfaceView
         final RajawaliSurfaceView surface = new RajawaliSurfaceView(this);
         surface.setFrameRate(60.0);
         surface.setRenderMode(IRajawaliSurface.RENDERMODE_WHEN_DIRTY);

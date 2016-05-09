@@ -54,10 +54,22 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.setObj_rotate_angle(90.0f);
         arrayList.add(tempM3D);
 
-        tempM3D = new Model3D(this, R.raw.watch0017_obj);
-//        tempM3D.addTexture(R.drawable.watch001);
-//        tempM3D.addTexture(R.drawable.watch002);
-        tempM3D.setObj_scale(10.0f);
+//        tempM3D = new Model3D(this, R.raw.watch0017_obj);
+////        tempM3D.addTexture(R.drawable.watch001);
+////        tempM3D.addTexture(R.drawable.watch002);
+//        tempM3D.setObj_scale(10.0f);
+//        tempM3D.setObj_translate_x(0.0f);
+//        tempM3D.setObj_translate_y(0.0f);
+//        tempM3D.setObj_rotate_angle(90.0f);
+//        arrayList.add(tempM3D);
+
+        tempM3D = new Model3D(this, R.raw.ingrid_mesh);
+        tempM3D.setMODE(Model3D.LOAD_MD5_MASH);
+        tempM3D.addAnims(R.raw.ingrid_idle);
+        tempM3D.addAnims(R.raw.ingrid_arm_stretch);
+        tempM3D.addAnims(R.raw.ingrid_bend);
+        tempM3D.addAnims(R.raw.ingrid_walk);
+        tempM3D.setObj_scale(30.0f);
         tempM3D.setObj_translate_x(0.0f);
         tempM3D.setObj_translate_y(0.0f);
         tempM3D.setObj_rotate_angle(90.0f);

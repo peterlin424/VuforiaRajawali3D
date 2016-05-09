@@ -34,6 +34,7 @@ import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleUtils;
  */
 public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
+    private static final boolean DEBUG = true;
     private static final String LOGTAG = "BaseVuforiaRender";
 
     private int MODE = BaseVuforiaActivity.MODE_ImageTarget;
@@ -110,7 +111,6 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             GLES20.glFrontFace(GLES20.GL_CCW); // Back camera
 
         // did we find any trackables this frame?
-//        Log.d(LOGTAG, "getNumTrackableResults : " + String.valueOf(state.getNumTrackableResults()));
         switch (MODE){
             case BaseVuforiaActivity.MODE_ImageTarget:
                 ImageTarget_FindTrackables(state);
@@ -149,7 +149,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     mActivity.HideAllModel();
                     return;
                 }
-//                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                if (DEBUG)
+                    Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
                 for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
@@ -188,7 +190,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     mActivity.HideAllModel();
                     return;
                 }
-//                Log.d(LOGTAG, "CloudReco trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                if (DEBUG)
+                    Log.d(LOGTAG, "CloudReco trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依參考雲端自訂的 Target Name 來選擇所要顯示的 model
                 int textureIndex = 0;
@@ -225,6 +229,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 Marker marker = (Marker) ((MarkerResult)result).getTrackable();
                 int id = marker.getMarkerId();
 
+                if (DEBUG)
+                    Log.d(LOGTAG,  "FrameMarker trackable " + tIdx + " MarkerId : " + String.valueOf(id));
+
                 for (int i=0; i<mActivity.getMarkerDataSetArray().size(); ++i){
                     if (mActivity.getMarkerDataSetArray().get(i) == id){
                         recorder.put(i, result);
@@ -260,7 +267,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     mActivity.HideAllModel();
                     return;
                 }
-//                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                if (DEBUG)
+                    Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
                 for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
@@ -302,7 +311,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     mActivity.HideAllModel();
                     return;
                 }
-//                Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                if (DEBUG)
+                    Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
                 for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
@@ -330,6 +341,8 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
     private void renderAugmentation(TrackableResult trackableResult, int textureIndex)
     {
+        Log.d(LOGTAG, "trackableResult : " + trackableResult.getTrackable().getName());
+
         // 取得辨識變形矩陣
         Matrix44F modelViewMatrix_Vuforia = Tool
                 .convertPose2GLMatrix(trackableResult.getPose());
