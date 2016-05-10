@@ -1,6 +1,7 @@
 package project.peter.com.vuforiarajawali3d;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -9,6 +10,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
+import project.peter.com.vuforiarajawali3d.Unit.CollisionCallback;
 import project.peter.com.vuforiarajawali3d.Unit.Model3D;
 
 public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnClickListener {
@@ -20,6 +22,13 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         super.onCreate(savedInstanceState);
         setShowModels();
         addCustomView();
+
+        this.setCollisionCallback(new CollisionCallback() {
+            @Override
+            public void ObjectCollision(int obj1, int obj2) {
+                Log.d("ImageTargetActivity", "Object " + obj1 + " is Collision by Object " + String.valueOf(obj2));
+            }
+        });
 
         Button bt_about = (Button)findViewById(R.id.bt_about);
         bt_about.setText("ABOUT");
@@ -36,7 +45,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         this.setDatasetStrings(dataString);
 
         // set max targets will show in same time
-        this.setMAX_TARGETS_COUNT(2);
+        this.setMAX_TARGETS_COUNT(4);
     }
 
     private void setShowModels(){
@@ -45,24 +54,41 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         Model3D tempM3D;
 
+        // target 1
         tempM3D = new Model3D(this, R.raw.roadcar_obj);
-//        tempM3D.addTexture(R.drawable.u1);
-//        tempM3D.addTexture(R.drawable.u2);
         tempM3D.setObj_scale(0.2f);
         tempM3D.setObj_translate_x(-20.0f);
         tempM3D.setObj_translate_y(-20.0f);
         tempM3D.setObj_rotate_angle(90.0f);
+
+        tempM3D.setCanCollision(true);
+        tempM3D.setShowBounding(false);
+        tempM3D.setColl_pos_x(200.0f);
+        tempM3D.setColl_pos_y(20.0f);
+        tempM3D.setColl_pos_z(-125.0f);
+        tempM3D.setColl_scale_x(800.0f);
+        tempM3D.setColl_scale_y(400.0f);
+        tempM3D.setColl_scale_z(500.0f);
+
         arrayList.add(tempM3D);
 
-//        tempM3D = new Model3D(this, R.raw.watch0017_obj);
-////        tempM3D.addTexture(R.drawable.watch001);
-////        tempM3D.addTexture(R.drawable.watch002);
-//        tempM3D.setObj_scale(10.0f);
-//        tempM3D.setObj_translate_x(0.0f);
-//        tempM3D.setObj_translate_y(0.0f);
-//        tempM3D.setObj_rotate_angle(90.0f);
-//        arrayList.add(tempM3D);
+        // target 2
+        tempM3D = new Model3D(this, R.raw.watch_obj);
+        tempM3D.setObj_scale(10.0f);
+        tempM3D.setObj_translate_x(0.0f);
+        tempM3D.setObj_translate_y(0.0f);
+        tempM3D.setObj_rotate_angle(90.0f);
 
+        tempM3D.setCanCollision(true);
+        tempM3D.setShowBounding(false);
+        tempM3D.setColl_pos_y(4.0f);
+        tempM3D.setColl_scale_x(4.0f);
+        tempM3D.setColl_scale_y(5.0f);
+        tempM3D.setColl_scale_z(5.0f);
+
+        arrayList.add(tempM3D);
+
+        // target 3
         tempM3D = new Model3D(this, R.raw.ingrid_mesh);
         tempM3D.setMODE(Model3D.LOAD_MD5_MASH);
         tempM3D.addAnims(R.raw.ingrid_idle);
@@ -70,9 +96,30 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.addAnims(R.raw.ingrid_bend);
         tempM3D.addAnims(R.raw.ingrid_walk);
         tempM3D.setObj_scale(30.0f);
+        tempM3D.setObj_rotate_angle(90.0f);
+
+        tempM3D.setCanCollision(true);
+        tempM3D.setShowBounding(false);
+        tempM3D.setColl_pos_y(0.1f);
+        tempM3D.setColl_scale_x(1.5f);
+        tempM3D.setColl_scale_y(6.0f);
+
+        arrayList.add(tempM3D);
+
+        // target 4
+        tempM3D = new Model3D(this, R.raw.watch0009_obj);
+        tempM3D.setObj_scale(10.0f);
         tempM3D.setObj_translate_x(0.0f);
         tempM3D.setObj_translate_y(0.0f);
         tempM3D.setObj_rotate_angle(90.0f);
+
+        tempM3D.setCanCollision(true);
+        tempM3D.setShowBounding(false);
+        tempM3D.setColl_pos_y(4.0f);
+        tempM3D.setColl_scale_x(4.0f);
+        tempM3D.setColl_scale_y(5.0f);
+        tempM3D.setColl_scale_z(5.0f);
+
         arrayList.add(tempM3D);
 
         this.setModel3DArrayList(arrayList);

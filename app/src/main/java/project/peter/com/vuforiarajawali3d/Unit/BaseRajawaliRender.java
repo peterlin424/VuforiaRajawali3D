@@ -3,8 +3,10 @@ package project.peter.com.vuforiarajawali3d.Unit;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.util.Log;
 import android.view.MotionEvent;
 
+import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
 
@@ -26,7 +28,10 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
     private DirectionalLight directionalLight;
     private ArcballCamera arcball;
 
+    private CollisionCallback collisionCallback;
+
     private ArrayList<Model3D> model3DArrayList = new ArrayList<>();
+
 
     public BaseRajawaliRender(Context context) {
         super(context);
@@ -125,6 +130,13 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
     }
 
     /**
+     * 碰撞偵測
+     * */
+    public void setCollisionCallback(CollisionCallback collisionCallback) {
+        this.collisionCallback = collisionCallback;
+    }
+
+    /**
      * RajawaliRenderer Override Function
      * */
     @Override
@@ -170,6 +182,21 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
 
         for (int i=0; i<model3DArrayList.size(); ++i){
             model3DArrayList.get(i).render(arcball);
+        }
+
+        // 碰撞處理
+        for (int i=0; i<model3DArrayList.size()-1; i++){
+            if (model3DArrayList.get(i).getCanCollision()){
+                for (int j=i+1; j<model3DArrayList.size(); j++){
+                    if (model3DArrayList.get(i).isVisiable() && model3DArrayList.get(j).isVisiable()){
+                        if (model3DArrayList.get(i).isCollision(model3DArrayList.get(j).getCollBounding())){
+//                            Log.d(LOGTAG, "Object " + i + " is Collision by Object " + String.valueOf(j));
+                            if (collisionCallback!=null)
+                                collisionCallback.ObjectCollision(i, j);
+                        }
+                    }
+                }
+            }
         }
     }
 

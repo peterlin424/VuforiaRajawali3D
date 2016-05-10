@@ -19,12 +19,10 @@ import android.widget.RelativeLayout;
 
 import com.qualcomm.vuforia.CameraDevice;
 import com.qualcomm.vuforia.DataSet;
-import com.qualcomm.vuforia.ImageTarget;
 import com.qualcomm.vuforia.ImageTargetBuilder;
 import com.qualcomm.vuforia.Marker;
 import com.qualcomm.vuforia.MarkerTracker;
 import com.qualcomm.vuforia.ObjectTracker;
-import com.qualcomm.vuforia.Rectangle;
 import com.qualcomm.vuforia.STORAGE_TYPE;
 import com.qualcomm.vuforia.State;
 import com.qualcomm.vuforia.TargetFinder;
@@ -33,14 +31,12 @@ import com.qualcomm.vuforia.Trackable;
 import com.qualcomm.vuforia.Tracker;
 import com.qualcomm.vuforia.TrackerManager;
 import com.qualcomm.vuforia.Vec2F;
-import com.qualcomm.vuforia.VirtualButton;
 import com.qualcomm.vuforia.Vuforia;
 
 import org.rajawali3d.surface.IRajawaliSurface;
 import org.rajawali3d.surface.RajawaliSurfaceView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import project.peter.com.vuforiarajawali3d.R;
 import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationControl;
@@ -144,6 +140,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     }
     public void setButtonCallback(VirtualButtonCallback callback){
         this.buttonCallback = callback;
+    }
+    public void setCollisionCallback(CollisionCallback callback){
+        BaseRajawaliRender.setCollisionCallback(callback);
     }
 
     //ImageTarget
