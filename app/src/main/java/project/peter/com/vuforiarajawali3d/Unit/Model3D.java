@@ -1,5 +1,6 @@
 package project.peter.com.vuforiarajawali3d.Unit;
 
+import android.app.Activity;
 import android.content.Context;
 import android.opengl.GLES20;
 
@@ -90,10 +91,34 @@ public class Model3D {
     public void setAnimFPS(int animFPS) {
         AnimFPS = animFPS;
     }
-    public void transitionAnimation(int index) {
+    public void transitionAnimation(int index, int duratime) {
         if (index+1>AnimsList.size())
             return;
-        ObjectMash.transitionToAnimationSequence(AnimsList.get(index), 1000);
+        ObjectMash.transitionToAnimationSequence(AnimsList.get(index), duratime);
+    }
+    public void transitionAnimation(final int animId1, int animId2, final int duratime, final int keepTime) {
+        if ((animId1+1)>AnimsList.size()||(animId2+1)>AnimsList.size())
+            return;
+        ObjectMash.transitionToAnimationSequence(AnimsList.get(animId2), duratime);
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(keepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                ((Activity)context).runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        ObjectMash.transitionToAnimationSequence(AnimsList.get(animId1), duratime);
+                    }
+                });
+            }
+        };
+        thread.start(); //start the thread
     }
 
     public boolean isVisiable() {
@@ -176,9 +201,11 @@ public class Model3D {
         try {
             switch (MODE){
                 case Model3D.LOAD_MTL_OBJ:
+//                    Object3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     Object3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     break;
                 case Model3D.LOAD_MD5_MASH:
+//                    ObjectMash.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     ObjectMash.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     break;
             }

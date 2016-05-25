@@ -194,6 +194,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public void setModel3DArrayList(ArrayList<Model3D> model3DArrayList){
         BaseRajawaliRender.setModel3DArrayList(model3DArrayList);
     }
+    public ArrayList<Model3D> getModel3DArrayList(){
+        return BaseRajawaliRender.getModel3DArrayList();
+    }
 
     /**
      * 控制 Rajawali
@@ -1314,6 +1317,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         {
             ImageTargetBuilder targetBuilder = objectTracker
                     .getImageTargetBuilder();
+
             if (targetBuilder != null)
             {
                 if (targetBuilder.getFrameQuality() == ImageTargetBuilder.FRAME_QUALITY.FRAME_QUALITY_LOW)

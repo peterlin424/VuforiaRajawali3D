@@ -3,10 +3,8 @@ package project.peter.com.vuforiarajawali3d.Unit;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.util.Log;
 import android.view.MotionEvent;
 
-import org.rajawali3d.bounds.IBoundingVolume;
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
 
@@ -69,6 +67,9 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
      * */
     public void setModel3DArrayList(ArrayList<Model3D> model3DArrayList) {
         this.model3DArrayList = model3DArrayList;
+    }
+    public ArrayList<Model3D> getModel3DArrayList() {
+        return this.model3DArrayList;
     }
     public void HideAllModel(){
         for (int i=0; i<model3DArrayList.size(); ++i){
@@ -190,7 +191,6 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
                 for (int j=i+1; j<model3DArrayList.size(); j++){
                     if (model3DArrayList.get(i).isVisiable() && model3DArrayList.get(j).isVisiable()){
                         if (model3DArrayList.get(i).isCollision(model3DArrayList.get(j).getCollBounding())){
-//                            Log.d(LOGTAG, "Object " + i + " is Collision by Object " + String.valueOf(j));
                             if (collisionCallback!=null)
                                 collisionCallback.ObjectCollision(i, j);
                         }

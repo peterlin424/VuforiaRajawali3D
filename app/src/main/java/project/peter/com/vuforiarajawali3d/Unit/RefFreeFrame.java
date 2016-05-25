@@ -197,6 +197,7 @@ public class RefFreeFrame {
                 // if found, set to success, success time and:
                 TrackableSource newTrackableSource = targetBuilder
                         .getTrackableSource();
+
                 if (newTrackableSource != null)
                 {
                     newStatus = STATUS.STATUS_SUCCESS;

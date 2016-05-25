@@ -25,8 +25,12 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         this.setCollisionCallback(new CollisionCallback() {
             @Override
-            public void ObjectCollision(int obj1, int obj2) {
-                Log.d("ImageTargetActivity", "Object " + obj1 + " is Collision by Object " + String.valueOf(obj2));
+            public void ObjectCollision(int objId1, int objId2) {
+                Log.d("ImageTargetActivity", "Object " + objId1 + " is Collision by Object " + String.valueOf(objId2));
+                if (objId1==2||objId2==2){
+                    Model3D temp = ImageTargetActivity.this.getModel3DArrayList().get(2);
+                    temp.transitionAnimation(0,1,1000,2000);
+                }
             }
         });
 
@@ -54,7 +58,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         Model3D tempM3D;
 
-        // target 1
+        // target 1 , id : 0
         tempM3D = new Model3D(this, R.raw.roadcar_obj);
         tempM3D.setObj_scale(0.2f);
         tempM3D.setObj_translate_x(-20.0f);
@@ -72,7 +76,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         arrayList.add(tempM3D);
 
-        // target 2
+        // target 2 , id : 1
         tempM3D = new Model3D(this, R.raw.watch_obj);
         tempM3D.setObj_scale(10.0f);
         tempM3D.setObj_translate_x(0.0f);
@@ -88,7 +92,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         arrayList.add(tempM3D);
 
-        // target 3
+        // target 3 , id : 2
         tempM3D = new Model3D(this, R.raw.ingrid_mesh);
         tempM3D.setMODE(Model3D.LOAD_MD5_MASH);
         tempM3D.addAnims(R.raw.ingrid_idle);
@@ -106,7 +110,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         arrayList.add(tempM3D);
 
-        // target 4
+        // target 4 , id : 3
         tempM3D = new Model3D(this, R.raw.watch0009_obj);
         tempM3D.setObj_scale(10.0f);
         tempM3D.setObj_translate_x(0.0f);
