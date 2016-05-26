@@ -129,7 +129,36 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
         }
         return model3DArrayList.get(index).getObj_rotate_angle();
     }
-
+    public float getObjRotateX(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_rotate_x();
+            } else {
+                return 1.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_rotate_x();
+    }
+    public float getObjRotateY(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_rotate_y();
+            } else {
+                return 0.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_rotate_y();
+    }
+    public float getObjRotateZ(int index){
+        if (index>=model3DArrayList.size()){
+            if (model3DArrayList.size()==1){
+                return model3DArrayList.get(0).getObj_rotate_z();
+            } else {
+                return 0.0f;
+            }
+        }
+        return model3DArrayList.get(index).getObj_rotate_z();
+    }
     /**
      * 碰撞偵測
      * */

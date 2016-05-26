@@ -219,6 +219,15 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public float getOBJECT_ROTATE_ANGLE_FLOAT(int index){
         return BaseRajawaliRender.getObjRotateAngle(index);
     }
+    public float getOBJECT_ROTATE_X_FLOAT(int index){
+        return BaseRajawaliRender.getObjRotateX(index);
+    }
+    public float getOBJECT_ROTATE_Y_FLOAT(int index){
+        return BaseRajawaliRender.getObjRotateY(index);
+    }
+    public float getOBJECT_ROTATE_Z_FLOAT(int index){
+        return BaseRajawaliRender.getObjRotateZ(index);
+    }
 
     /**
      * Android life cycle

@@ -354,7 +354,11 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 mActivity.getOBJECT_TRANSLATE_Y_FLOAT(textureIndex),
                 mActivity.getOBJECT_SCALE_FLOAT(textureIndex));
         Matrix.rotateM(modelViewMatrix, 0,
-                mActivity.getOBJECT_ROTATE_ANGLE_FLOAT(textureIndex), 1.0f, 0, 0);
+                mActivity.getOBJECT_ROTATE_ANGLE_FLOAT(textureIndex),
+                mActivity.getOBJECT_ROTATE_X_FLOAT(textureIndex),
+                mActivity.getOBJECT_ROTATE_Y_FLOAT(textureIndex),
+                mActivity.getOBJECT_ROTATE_Z_FLOAT(textureIndex)
+        );
         Matrix.scaleM(modelViewMatrix, 0,
                 mActivity.getOBJECT_SCALE_FLOAT(textureIndex),
                 mActivity.getOBJECT_SCALE_FLOAT(textureIndex),

@@ -59,6 +59,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         Model3D tempM3D;
 
         // target 1 , id : 0
+        // MTL OBJ
         tempM3D = new Model3D(this, R.raw.roadcar_obj);
         tempM3D.setObj_scale(0.2f);
         tempM3D.setObj_translate_x(-20.0f);
@@ -66,7 +67,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.setObj_rotate_angle(90.0f);
 
         tempM3D.setCanCollision(true);
-        tempM3D.setShowBounding(false);
+        tempM3D.setShowBounding(true);
         tempM3D.setColl_pos_x(200.0f);
         tempM3D.setColl_pos_y(20.0f);
         tempM3D.setColl_pos_z(-125.0f);
@@ -83,12 +84,12 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.setObj_translate_y(0.0f);
         tempM3D.setObj_rotate_angle(90.0f);
 
-        tempM3D.setCanCollision(true);
-        tempM3D.setShowBounding(false);
-        tempM3D.setColl_pos_y(4.0f);
-        tempM3D.setColl_scale_x(4.0f);
-        tempM3D.setColl_scale_y(5.0f);
-        tempM3D.setColl_scale_z(5.0f);
+//        tempM3D.setCanCollision(true);
+//        tempM3D.setShowBounding(false);
+//        tempM3D.setColl_pos_y(4.0f);
+//        tempM3D.setColl_scale_x(4.0f);
+//        tempM3D.setColl_scale_y(5.0f);
+//        tempM3D.setColl_scale_z(5.0f);
 
         arrayList.add(tempM3D);
 
@@ -103,7 +104,7 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.setObj_rotate_angle(90.0f);
 
         tempM3D.setCanCollision(true);
-        tempM3D.setShowBounding(false);
+        tempM3D.setShowBounding(true);
         tempM3D.setColl_pos_y(0.1f);
         tempM3D.setColl_scale_x(1.5f);
         tempM3D.setColl_scale_y(6.0f);
@@ -111,18 +112,13 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
         arrayList.add(tempM3D);
 
         // target 4 , id : 3
-        tempM3D = new Model3D(this, R.raw.watch0009_obj);
+        tempM3D = new Model3D(this, R.raw.music_viedo);
+        tempM3D.setMODE(Model3D.LOAD_VEDIO_PLANE);
         tempM3D.setObj_scale(10.0f);
         tempM3D.setObj_translate_x(0.0f);
         tempM3D.setObj_translate_y(0.0f);
-        tempM3D.setObj_rotate_angle(90.0f);
-
-        tempM3D.setCanCollision(true);
-        tempM3D.setShowBounding(false);
-        tempM3D.setColl_pos_y(4.0f);
-        tempM3D.setColl_scale_x(4.0f);
-        tempM3D.setColl_scale_y(5.0f);
-        tempM3D.setColl_scale_z(5.0f);
+        tempM3D.setObj_rotate_angle(180.0f);
+        tempM3D.setObj_rotate_y(90.0f);
 
         arrayList.add(tempM3D);
 
