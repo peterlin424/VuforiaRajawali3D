@@ -31,7 +31,7 @@ public class Model3D {
 
     public final static int LOAD_MTL_OBJ = 0;
     public final static int LOAD_MD5_MASH = 1;
-    public final static int LOAD_VEDIO_PLANE = 2;
+    public final static int LOAD_VIDEO_PLANE = 2;
 
     private int MODE = LOAD_MTL_OBJ;
 
@@ -113,7 +113,7 @@ public class Model3D {
                         ObjectMash.play();
                     }
                     break;
-                case LOAD_VEDIO_PLANE:
+                case LOAD_VIDEO_PLANE:
 
                     mediaPlayer = MediaPlayer.create(context, resId_obj);
                     videoTexture = new VideoTexture("VideoTexture", mediaPlayer);
@@ -150,7 +150,7 @@ public class Model3D {
 //                    ObjectMash.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     ObjectMash.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     break;
-                case Model3D.LOAD_VEDIO_PLANE:
+                case Model3D.LOAD_VIDEO_PLANE:
                     Object3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     videoTexture.update();
                     break;
@@ -215,7 +215,7 @@ public class Model3D {
                 case Model3D.LOAD_MD5_MASH:
                     ObjectMash.setVisible(visiable);
                     break;
-                case Model3D.LOAD_VEDIO_PLANE:
+                case Model3D.LOAD_VIDEO_PLANE:
                     Object3D.setVisible(visiable);
 
                     if (visiable){
