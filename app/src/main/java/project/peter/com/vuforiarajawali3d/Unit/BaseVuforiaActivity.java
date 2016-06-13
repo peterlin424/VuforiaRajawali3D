@@ -283,10 +283,14 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 }
                 break;
             case MODE_VirtualButton:
+                String errorMsg = "Please ";
+                if (mDatasetStrings.size()==0){
+                    errorMsg += "setDatasetStrings,";
+                }
                 if (VirtualButtonName.size()==0){
                     new AlertDialog.Builder(this)
                             .setTitle("Init Error")
-                            .setMessage("Please setVirtualButton")
+                            .setMessage( errorMsg + " setVirtualButton")
                             .setPositiveButton("cancel", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -858,7 +862,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     // Initializes AR application components.
     private void initApplicationAR()
     {
-        if (MODE == BaseVuforiaActivity.MODE_UserDefinedTarget){
+        if (MODE == BaseVuforiaActivity.MODE_UserDefinedTarget || MODE == BaseVuforiaActivity.MODE_VirtualButton){
             refFreeFrame = new RefFreeFrame(this, vuforiaAppSession);
             refFreeFrame.init();
         }
@@ -886,6 +890,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_VirtualButton:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_VirtualButton);
                 BaseVuforiaRender.setButtonCallback(buttonCallback);
+                break;
             case MODE_UserDefinedTarget:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_UserDefinedTarget);
                 break;
@@ -1351,6 +1356,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     {
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
+
         refFreeFrame.initGL(metrics.widthPixels, metrics.heightPixels);
     }
 }

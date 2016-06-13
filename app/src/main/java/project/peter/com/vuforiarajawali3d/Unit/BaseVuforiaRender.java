@@ -245,11 +245,9 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             ArrayList<Boolean> visibleRecorder = new ArrayList<>();
             for (int i=0; i<mActivity.getMarkerDataSetArray().size(); ++i){
                 if (recorder.get(i)!=null){
-//                    mActivity.setVisibleModelByIndex(i, true);
                     visibleRecorder.add(true);
                     renderAugmentation(recorder.get(i), i);
                 } else {
-//                    mActivity.setVisibleModelByIndex(i, false);
                     visibleRecorder.add(false);
                 }
             }
@@ -287,10 +285,11 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
             }
 
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
             for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                 if (recorder.get(i)!=null){
 //                    mActivity.setVisibleModelByIndex(i, true);
-
+                    visibleRecorder.add(true);
                     renderAugmentation(recorder.get(i), i);
                     if (buttons.size()!=0)
                         drawVirtualButton(recorder.get(i), i, buttons.get(i));
@@ -298,8 +297,10 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                         Log.d(LOGTAG, "Please set VirtualButtonName");
                 } else {
 //                    mActivity.setVisibleModelByIndex(i, false);
+                    visibleRecorder.add(false);
                 }
             }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
         } else {
             mActivity.HideAllModel();
         }
@@ -331,15 +332,17 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
             }
 
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
             for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                 if (recorder.get(i)!=null){
-//                    mActivity.setVisibleModelByIndex(i, true);
+                    visibleRecorder.add(true);
                     renderAugmentation(recorder.get(i), i);
 
                 } else {
-//                    mActivity.setVisibleModelByIndex(i, false);
+                    visibleRecorder.add(false);
                 }
             }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
 
         } else {
             mActivity.HideAllModel();
