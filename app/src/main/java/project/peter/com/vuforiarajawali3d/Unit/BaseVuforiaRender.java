@@ -161,16 +161,17 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
             }
 
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
             for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                 if (recorder.get(i)!=null){
-                    mActivity.setVisiableModelByIndex(i, true);
-
+                    visibleRecorder.add(true);
                     renderAugmentation(recorder.get(i), i);
-
                 } else {
-                    mActivity.setVisiableModelByIndex(i, false);
+                    visibleRecorder.add(false);
                 }
             }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
+
         } else {
             mActivity.HideAllModel();
         }
@@ -182,6 +183,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         if (state.getNumTrackableResults()>0){
 
             ArrayList<String> temp = mActivity.getCloudDataSet();
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
 
             for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
                 TrackableResult result = state.getTrackableResult(tIdx);
@@ -194,18 +196,19 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 if (DEBUG)
                     Log.d(LOGTAG, "CloudReco trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
-                // 依參考雲端自訂的 Target Name 來選擇所要顯示的 model
-                int textureIndex = 0;
                 for (int i=0; i<temp.size(); ++i){
                     if (result.getTrackable().getName().equals(temp.get(i))){
-                        textureIndex = i;
+                        visibleRecorder.add(true);
+                        renderAugmentation(result, i);
+                    } else {
+                        visibleRecorder.add(false);
                     }
                 }
 
                 mActivity.stopFinderIfStarted();
-                mActivity.setVisiableModelByIndex(textureIndex, true);
-                renderAugmentation(result, textureIndex);
             }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
+
         } else {
             mActivity.startFinderIfStopped();
             mActivity.HideAllModel();
@@ -239,14 +242,19 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
             }
 
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
             for (int i=0; i<mActivity.getMarkerDataSetArray().size(); ++i){
                 if (recorder.get(i)!=null){
-                    mActivity.setVisiableModelByIndex(i, true);
+//                    mActivity.setVisibleModelByIndex(i, true);
+                    visibleRecorder.add(true);
                     renderAugmentation(recorder.get(i), i);
                 } else {
-                    mActivity.setVisiableModelByIndex(i, false);
+//                    mActivity.setVisibleModelByIndex(i, false);
+                    visibleRecorder.add(false);
                 }
             }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
+
         } else {
             mActivity.HideAllModel();
         }
@@ -281,7 +289,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
             for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                 if (recorder.get(i)!=null){
-                    mActivity.setVisiableModelByIndex(i, true);
+//                    mActivity.setVisibleModelByIndex(i, true);
 
                     renderAugmentation(recorder.get(i), i);
                     if (buttons.size()!=0)
@@ -289,7 +297,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                     else
                         Log.d(LOGTAG, "Please set VirtualButtonName");
                 } else {
-                    mActivity.setVisiableModelByIndex(i, false);
+//                    mActivity.setVisibleModelByIndex(i, false);
                 }
             }
         } else {
@@ -325,14 +333,14 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
             for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
                 if (recorder.get(i)!=null){
-                    mActivity.setVisiableModelByIndex(i, true);
-
+//                    mActivity.setVisibleModelByIndex(i, true);
                     renderAugmentation(recorder.get(i), i);
 
                 } else {
-                    mActivity.setVisiableModelByIndex(i, false);
+//                    mActivity.setVisibleModelByIndex(i, false);
                 }
             }
+
         } else {
             mActivity.HideAllModel();
         }
@@ -403,6 +411,4 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             //TODO 按鈕框處理
         }
     }
-
-
 }

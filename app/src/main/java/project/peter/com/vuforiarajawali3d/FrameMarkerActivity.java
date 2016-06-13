@@ -55,14 +55,14 @@ public class FrameMarkerActivity extends BaseVuforiaActivity implements View.OnC
         tempM3D.setObj_rotate_angle(90.0f);
         arrayList.add(tempM3D);
 
-        tempM3D = new Model3D(this, R.raw.roadcar_obj);
-        tempM3D.addTexture(R.drawable.u1);
-        tempM3D.addTexture(R.drawable.u2);
-        tempM3D.setObj_scale(0.1f);
-        tempM3D.setObj_translate_x(-20.0f);
-        tempM3D.setObj_translate_y(-20.0f);
-        tempM3D.setObj_rotate_angle(90.0f);
-        arrayList.add(tempM3D);
+//        tempM3D = new Model3D(this, R.raw.roadcar_obj);
+//        tempM3D.addTexture(R.drawable.u1);
+//        tempM3D.addTexture(R.drawable.u2);
+//        tempM3D.setObj_scale(0.1f);
+//        tempM3D.setObj_translate_x(-20.0f);
+//        tempM3D.setObj_translate_y(-20.0f);
+//        tempM3D.setObj_rotate_angle(90.0f);
+//        arrayList.add(tempM3D);
         this.setModel3DArrayList(arrayList);
     }
     private void addCustomView(){

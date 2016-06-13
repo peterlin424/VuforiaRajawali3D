@@ -47,15 +47,8 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             float[] projMatrix,
             float[] vMatrix){
 
-        if (index>=model3DArrayList.size()){
-            if (model3DArrayList.size()==1){
-                model3DArrayList.get(0).setVpMatrix(vpMatrix);
-                model3DArrayList.get(0).setProjMatrix(projMatrix);
-                model3DArrayList.get(0).setvMatrix(vMatrix);
-                return;
-            } else {
-                return;
-            }
+        if (index>(model3DArrayList.size()-1)){
+            index = model3DArrayList.size()-1;
         }
         model3DArrayList.get(index).setVpMatrix(vpMatrix);
         model3DArrayList.get(index).setProjMatrix(projMatrix);
@@ -73,20 +66,37 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
     }
     public void HideAllModel(){
         for (int i=0; i<model3DArrayList.size(); ++i){
-            setVisiableModelByIndex(i, false);
+            setVisibleModelByIndex(i, false);
         }
     }
-    public void setVisiableModelByIndex(int index, boolean visiable){
+    public void setVisibleModelByIndex(int index, boolean visiable){
 
-        if (index>=model3DArrayList.size()){
-            if (model3DArrayList.size()==1){
-                model3DArrayList.get(0).setVisiable(visiable);
-                return;
-            } else {
-                return;
+        model3DArrayList.get(index).setVisiable(visiable);
+    }
+
+    public void setVisibleModelByBoolenArray(ArrayList<Boolean> visibleRecorder){
+
+        boolean result = false;
+        // visibleRecorder.size > model3DArrayList.size
+        if (visibleRecorder.size() > model3DArrayList.size()){
+            for (int i=0; i<visibleRecorder.size(); ++i){
+
+                if (i>=(model3DArrayList.size()-1)){
+
+                    if (visibleRecorder.get(i))
+                        result = true;
+
+                    setVisibleModelByIndex(model3DArrayList.size()-1, result);
+                } else {
+                    setVisibleModelByIndex(i, visibleRecorder.get(i));
+                }
+            }
+        } else {
+            // visibleRecorder.size <= model3DArrayList.size
+            for (int i=0; i<visibleRecorder.size(); ++i){
+                setVisibleModelByIndex(i, visibleRecorder.get(i));
             }
         }
-        model3DArrayList.get(index).setVisiable(visiable);
     }
 
     public float getObjScale(int index){
@@ -94,7 +104,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_scale();
             } else {
-                return 0.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_scale();
             }
         }
         return model3DArrayList.get(index).getObj_scale();
@@ -104,7 +114,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_translate_x();
             } else {
-                return 0.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_translate_x();
             }
         }
         return model3DArrayList.get(index).getObj_translate_x();
@@ -114,7 +124,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_translate_y();
             } else {
-                return 0.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_translate_y();
             }
         }
         return model3DArrayList.get(index).getObj_translate_y();
@@ -124,7 +134,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_rotate_angle();
             } else {
-                return 0.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_rotate_angle();
             }
         }
         return model3DArrayList.get(index).getObj_rotate_angle();
@@ -134,7 +144,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_rotate_x();
             } else {
-                return 1.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_rotate_x();
             }
         }
         return model3DArrayList.get(index).getObj_rotate_x();
@@ -144,7 +154,7 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_rotate_y();
             } else {
-                return 0.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_rotate_y();
             }
         }
         return model3DArrayList.get(index).getObj_rotate_y();
@@ -154,11 +164,12 @@ public class BaseRajawaliRender extends org.rajawali3d.renderer.RajawaliRenderer
             if (model3DArrayList.size()==1){
                 return model3DArrayList.get(0).getObj_rotate_z();
             } else {
-                return 0.0f;
+                return model3DArrayList.get(model3DArrayList.size()-1).getObj_rotate_z();
             }
         }
         return model3DArrayList.get(index).getObj_rotate_z();
     }
+
     /**
      * 碰撞偵測
      * */

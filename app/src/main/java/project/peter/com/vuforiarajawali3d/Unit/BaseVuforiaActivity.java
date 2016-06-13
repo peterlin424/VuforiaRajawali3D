@@ -204,8 +204,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public void HideAllModel(){
         BaseRajawaliRender.HideAllModel();
     }
-    public void setVisiableModelByIndex(int index, boolean visiable){
-        BaseRajawaliRender.setVisiableModelByIndex(index, visiable);
+    public void setVisibleModelByBoolenArray(ArrayList<Boolean> visibleRecorder){
+        BaseRajawaliRender.setVisibleModelByBoolenArray(visibleRecorder);
     }
     public float getOBJECT_TRANSLATE_X_FLOAT(int index){
         return BaseRajawaliRender.getObjTranslateX(index);
