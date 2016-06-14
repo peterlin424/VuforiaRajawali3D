@@ -45,8 +45,8 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         // set local target library
         ArrayList<String> dataString = new ArrayList<>();
-//        dataString.add("Watch.xml");
-        dataString.add("LifeWater.xml");
+        dataString.add("Watch.xml");
+//        dataString.add("LifeWater.xml");
         this.setDatasetStrings(dataString);
 
         // set max targets will show in same time
@@ -116,15 +116,15 @@ public class ImageTargetActivity extends BaseVuforiaActivity implements View.OnC
 
         // target 4 , id : 3
         // VIDEO
-//        tempM3D = new Model3D(this, R.raw.music_video);
-//        tempM3D.setMODE(Model3D.LOAD_VIDEO_PLANE);
-//        tempM3D.setObj_scale(10.0f);
-//        tempM3D.setObj_translate_x(0.0f);
-//        tempM3D.setObj_translate_y(0.0f);
-//        tempM3D.setObj_rotate_angle(180.0f);
-//        tempM3D.setObj_rotate_y(90.0f);
-//
-//        arrayList.add(tempM3D);
+        tempM3D = new Model3D(this, R.raw.music_video);
+        tempM3D.setMODE(Model3D.LOAD_VIDEO_PLANE);
+        tempM3D.setObj_scale(10.0f);
+        tempM3D.setObj_translate_x(0.0f);
+        tempM3D.setObj_translate_y(0.0f);
+        tempM3D.setObj_rotate_angle(180.0f);
+        tempM3D.setObj_rotate_y(90.0f);
+
+        arrayList.add(tempM3D);
 
         this.setModel3DArrayList(arrayList);
     }
