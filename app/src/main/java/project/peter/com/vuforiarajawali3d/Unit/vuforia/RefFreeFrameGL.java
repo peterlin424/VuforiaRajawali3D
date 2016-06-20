@@ -1,4 +1,4 @@
-package project.peter.com.vuforiarajawali3d.Unit;
+package project.peter.com.vuforiarajawali3d.Unit.vuforia;
 
 import android.content.res.Configuration;
 import android.opengl.GLES20;
@@ -14,9 +14,10 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleUtils;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.Texture;
+import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.SampleApplicationSession;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.SampleUtils;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.Texture;
 
 /**
  * Created by linweijie on 4/29/16.

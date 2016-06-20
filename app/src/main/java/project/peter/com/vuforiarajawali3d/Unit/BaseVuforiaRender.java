@@ -5,6 +5,7 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import com.qualcomm.vuforia.CylinderTargetResult;
 import com.qualcomm.vuforia.DataSet;
 import com.qualcomm.vuforia.ImageTargetResult;
 import com.qualcomm.vuforia.Marker;
@@ -25,9 +26,9 @@ import java.util.HashMap;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
-import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.LoadingDialogHandler;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleUtils;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.SampleApplicationSession;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.LoadingDialogHandler;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.SampleUtils;
 
 /**
  * Created by linweijie on 4/18/16.
@@ -102,6 +103,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         mRenderer.drawVideoBackground();
 
         GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+
         GLES20.glEnable(GLES20.GL_CULL_FACE);
         GLES20.glCullFace(GLES20.GL_BACK);
 
@@ -127,7 +129,10 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             case BaseVuforiaActivity.MODE_UserDefinedTarget:
                 // Render the RefFree UI elements depending on the current state
                 mActivity.refFreeFrame.render();
-                userDefinedTarget(state);
+                UserDefinedTarget_FindTrackables(state);
+                break;
+            case BaseVuforiaActivity.MODE_Cylinder:
+                CylinderTarget_FindTrackables(state);
                 break;
         }
 
@@ -275,7 +280,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
 
                 if (DEBUG)
-                    Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+                    Log.d(LOGTAG, "VirtualButton trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
                 for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
@@ -306,7 +311,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
         }
     }
 
-    private void userDefinedTarget(State state){
+    private void UserDefinedTarget_FindTrackables(State state){
 
         if (state.getNumTrackableResults()>0){
 
@@ -322,7 +327,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
                 }
 
                 if (DEBUG)
-                    Log.d(LOGTAG, "ImageTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+                    Log.d(LOGTAG, "UserDefinedTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
 
                 // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
                 for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
@@ -348,15 +353,57 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             mActivity.HideAllModel();
         }
     }
+    private void CylinderTarget_FindTrackables(State state){
+        if (state.getNumTrackableResults()>0){
 
+            DataSet temp_dataset = mActivity.getmCurrentDataset();
+            HashMap<Integer, TrackableResult> recorder = new HashMap<>();
+
+            for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
+                TrackableResult result = state.getTrackableResult(tIdx);
+
+                if (!result.isOfType(CylinderTargetResult.getClassType()))
+                    continue;
+
+                if (result == null)
+                {
+                    mActivity.HideAllModel();
+                    return;
+                }
+
+                if (DEBUG)
+                    Log.d(LOGTAG, "CylinderTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
+                for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                    if (temp_dataset.getTrackable(i).getName().equals(result.getTrackable().getName())){
+                        recorder.put(i, result);
+                    }
+                }
+            }
+
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
+            for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                if (recorder.get(i)!=null){
+                    visibleRecorder.add(true);
+                    renderAugmentation(recorder.get(i), i);
+                } else {
+                    visibleRecorder.add(false);
+                }
+            }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
+
+        } else {
+            mActivity.HideAllModel();
+        }
+    }
 
     private void renderAugmentation(TrackableResult trackableResult, int textureIndex)
     {
         Log.d(LOGTAG, "trackableResult : " + trackableResult.getTrackable().getName());
 
         // 取得辨識變形矩陣
-        Matrix44F modelViewMatrix_Vuforia = Tool
-                .convertPose2GLMatrix(trackableResult.getPose());
+        Matrix44F modelViewMatrix_Vuforia = Tool.convertPose2GLMatrix(trackableResult.getPose());
         float[] modelViewMatrix = modelViewMatrix_Vuforia.getData();
         float[] modelViewProjection = new float[16];
 
@@ -381,7 +428,6 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
         SampleUtils.checkGLError("Render Frame");
     }
-
 
     private void drawVirtualButton(TrackableResult trackableResult, int textureIndex, String[] buttons){
         ImageTargetResult imageTargetResult = (ImageTargetResult) trackableResult;

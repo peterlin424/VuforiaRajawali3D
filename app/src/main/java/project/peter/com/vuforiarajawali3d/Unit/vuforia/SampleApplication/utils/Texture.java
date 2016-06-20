@@ -1,4 +1,4 @@
-package project.peter.com.vuforiarajawali3d.SampleApplication.utils;
+package project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils;
 
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;

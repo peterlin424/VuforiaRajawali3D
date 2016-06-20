@@ -5,7 +5,7 @@ Vuforia is a trademark of PTC Inc., registered in the United States and other
 countries.
 ===============================================================================*/
 
-package project.peter.com.vuforiarajawali3d.SampleApplication;
+package project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication;
 
 // Used to send back to the activity any error during vuforia processes
 public class SampleApplicationException extends Exception

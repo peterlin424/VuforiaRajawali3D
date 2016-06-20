@@ -29,6 +29,11 @@ import java.util.ArrayList;
  */
 public class Model3D {
 
+//    public interface ObjectsInterface{
+//        void parse(RajawaliRenderer renderer);
+//        void render(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix);
+//    }
+
     public final static int LOAD_MTL_OBJ = 0;
     public final static int LOAD_MD5_MASH = 1;
     public final static int LOAD_VIDEO_PLANE = 2;
@@ -67,6 +72,13 @@ public class Model3D {
             coll_pos_y = 0.0f,
             coll_pos_z = 0.0f;
 
+    private ObjectsCallback objectsCallback;
+
+    public Model3D(Context c, int resId_obj, ObjectsCallback objectsCallback){
+        this.context = c;
+        this.resId_obj = resId_obj;
+        this.objectsCallback = objectsCallback;
+    }
     public Model3D(Context c, int resId_obj) {
         this.context = c;
         this.resId_obj = resId_obj;
@@ -124,14 +136,18 @@ public class Model3D {
                     material.setDiffuseMethod(new DiffuseMethod.Lambert());
                     material.addTexture(videoTexture);
 
-                    Object3D = new Plane(10f, 10f, 1,1);
+                    Object3D = new Plane(10f, 10f, 1, 1);
                     Object3D.setMaterial(material);
+                    Object3D.setDoubleSided(true);
                     mediaPlayer.setLooping(true);
                     break;
             }
 
             if (canCollision)
                 setCollisionBox();
+
+            if (objectsCallback!=null)
+                objectsCallback.parse(renderer);
 
         } catch (Exception e){
             e.printStackTrace();
@@ -161,6 +177,10 @@ public class Model3D {
                 mCollBounding = mCollCube.getGeometry().getBoundingBox();
                 mCollBounding.transform(mCollCube.getModelViewMatrix());
             }
+
+            if (objectsCallback!=null)
+                objectsCallback.render(camera, vpMatrix, projMatrix, vMatrix);
+
         } catch (Exception e){
             e.printStackTrace();
         }

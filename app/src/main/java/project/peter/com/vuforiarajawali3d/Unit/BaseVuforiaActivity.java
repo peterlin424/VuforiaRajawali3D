@@ -39,12 +39,13 @@ import org.rajawali3d.surface.RajawaliSurfaceView;
 import java.util.ArrayList;
 
 import project.peter.com.vuforiarajawali3d.R;
-import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationControl;
-import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationException;
-import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.LoadingDialogHandler;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleApplicationGLView;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.Texture;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.RefFreeFrame;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.SampleApplicationControl;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.SampleApplicationException;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.SampleApplicationSession;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.LoadingDialogHandler;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.SampleApplicationGLView;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.Texture;
 
 /**
  * Created by linweijie on 4/13/16.
@@ -59,9 +60,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public final static int MODE_VirtualButton = 3;
     public final static int MODE_UserDefinedTarget = 4;
 //    public final static int MODE_CubiodBox = 5;
-//    public final static int MODE_Cylinder = 6;
-    private int MODE = MODE_ImageTarget;
+    public final static int MODE_Cylinder = 6;
 
+    private int MODE = MODE_ImageTarget;
     private int MAX_TARGETS_COUNT = 1;
 
     private SampleApplicationSession vuforiaAppSession;
@@ -241,6 +242,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
         switch (MODE){
             case MODE_ImageTarget:
+            case MODE_Cylinder:
                 if (mDatasetStrings.size()<=0){
                     new AlertDialog.Builder(this)
                             .setTitle("Init Error")
@@ -299,6 +301,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                             })
                             .show();
                 }
+                break;
         }
 
         vuforiaAppSession = new SampleApplicationSession(this);
@@ -384,6 +387,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         {
             Log.e(LOGTAG, e.getString());
         }
+
+        // TODO release rajawali
+
 
         System.gc();
     }
@@ -475,6 +481,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_CloudReco:
             case MODE_VirtualButton:
             case MODE_UserDefinedTarget:
+            case MODE_Cylinder:
                 Tracker tracker = trackerManager.initTracker(ObjectTracker.getClassType());
                 if (tracker == null)
                 {
@@ -517,6 +524,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             switch (MODE){
                 case MODE_ImageTarget:
                 case MODE_VirtualButton:
+                case MODE_Cylinder:
                     ObjectTracker objectTracker = (ObjectTracker) trackerManager
                             .getTracker(ObjectTracker.getClassType());
                     if (objectTracker == null){
@@ -652,6 +660,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_ImageTarget:
             case MODE_VirtualButton:
             case MODE_UserDefinedTarget:
+            case MODE_Cylinder:
                 Tracker tracker = TrackerManager.getInstance().getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -690,6 +699,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_ImageTarget:
             case MODE_VirtualButton:
             case MODE_UserDefinedTarget:
+            case MODE_Cylinder:
                 Tracker tracker = trackerManager.getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -736,6 +746,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         switch (MODE){
             case MODE_ImageTarget:
             case MODE_VirtualButton:
+            case MODE_Cylinder:
                 ObjectTracker objectTracker = (ObjectTracker) tManager
                         .getTracker(ObjectTracker.getClassType());
                 if (objectTracker == null){
@@ -771,10 +782,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                         .getTracker(ObjectTracker.getClassType());
                 if (objectTracker_udt == null)
                 {
+                    Log.d(LOGTAG, "Failed to destroy the tracking data set because the ObjectTracker has not been initialized.");
                     result = false;
-                    Log.d(
-                            LOGTAG,
-                            "Failed to destroy the tracking data set because the ObjectTracker has not been initialized.");
                 }
 
                 if (dataSetUserDef != null)
@@ -782,9 +791,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                     if (objectTracker_udt.getActiveDataSet() != null
                             && !objectTracker_udt.deactivateDataSet(dataSetUserDef))
                     {
-                        Log.d(
-                                LOGTAG,
-                                "Failed to destroy the tracking data set because the data set could not be deactivated.");
+                        Log.d(LOGTAG, "Failed to destroy the tracking data set because the data set could not be deactivated.");
                         result = false;
                     }
 
@@ -893,6 +900,9 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 break;
             case MODE_UserDefinedTarget:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_UserDefinedTarget);
+                break;
+            case MODE_Cylinder:
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_Cylinder);
                 break;
         }
 
@@ -1031,6 +1041,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_ImageTarget:
             case MODE_FrameMarkers:
             case MODE_VirtualButton:
+            case MODE_Cylinder:
                 break;
             case MODE_CloudReco:
                 TrackerManager trackerManager = TrackerManager.getInstance();
@@ -1191,7 +1202,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     }
 
     // Callback function called when the target creation finished
-    void targetCreated()
+    public void targetCreated()
     {
         // Hides the loading dialog
         loadingDialogHandler
@@ -1206,7 +1217,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
 
 
     // Creates a texture given the filename
-    Texture createTexture(String nName)
+    public Texture createTexture(String nName)
     {
         return Texture.loadTextureFromApk(nName, getAssets());
     }

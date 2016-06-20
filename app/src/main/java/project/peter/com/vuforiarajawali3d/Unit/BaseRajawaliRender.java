@@ -11,6 +11,7 @@ import org.rajawali3d.lights.PointLight;
 import java.util.ArrayList;
 
 import project.peter.com.vuforiarajawali3d.R;
+import project.peter.com.vuforiarajawali3d.Unit.rajawali.ArcballCamera;
 
 /**
  * Created by linweijie on 4/8/16.

@@ -28,6 +28,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
 
         Button bt_userdefined_target = (Button)findViewById(R.id.bt_userdefined_target);
         bt_userdefined_target.setOnClickListener(this);
+
+        Button bt_cylinder_target = (Button)findViewById(R.id.bt_cylinder_target);
+        bt_cylinder_target.setOnClickListener(this);
     }
 
     @Override
@@ -47,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements OnClickListener {
                 break;
             case R.id.bt_userdefined_target:
                 startActivity(new Intent(MainActivity.this, UserDefinedTargetActivity.class));
+                break;
+            case R.id.bt_cylinder_target:
+                startActivity(new Intent(MainActivity.this, CylinderTargetActivity.class));
                 break;
         }
     }

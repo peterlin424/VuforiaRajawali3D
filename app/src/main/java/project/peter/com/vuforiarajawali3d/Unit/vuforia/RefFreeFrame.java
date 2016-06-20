@@ -1,4 +1,4 @@
-package project.peter.com.vuforiarajawali3d.Unit;
+package project.peter.com.vuforiarajawali3d.Unit.vuforia;
 
 import android.util.Log;
 
@@ -10,8 +10,9 @@ import com.qualcomm.vuforia.TrackerManager;
 import com.qualcomm.vuforia.Vec2F;
 import com.qualcomm.vuforia.VideoBackgroundConfig;
 
-import project.peter.com.vuforiarajawali3d.SampleApplication.SampleApplicationSession;
-import project.peter.com.vuforiarajawali3d.SampleApplication.utils.SampleUtils;
+import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.SampleApplicationSession;
+import project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication.utils.SampleUtils;
 
 /**
  * Created by linweijie on 4/29/16.
@@ -53,14 +54,14 @@ public class RefFreeFrame {
 
 
     // Function used to transition in the range [0, 1]
-    float transition(float v0, float inc, float a, float b)
+    public float transition(float v0, float inc, float a, float b)
     {
         float vOut = v0 + inc;
         return (vOut < a ? a : (vOut > b ? b : vOut));
     }
 
 
-    float transition(float v0, float inc)
+    public float transition(float v0, float inc)
     {
         return transition(v0, inc, 0.0f, 1.0f);
     }
@@ -85,7 +86,7 @@ public class RefFreeFrame {
     }
 
 
-    void init()
+    public void init()
     {
         // load the frame texture
         frameGL.getTextures();
@@ -94,7 +95,7 @@ public class RefFreeFrame {
     }
 
 
-    void deInit()
+    public void deInit()
     {
         TrackerManager trackerManager = TrackerManager.getInstance();
         ObjectTracker objectTracker = (ObjectTracker) (trackerManager
@@ -112,7 +113,7 @@ public class RefFreeFrame {
     }
 
 
-    void initGL(int screenWidth, int screenHeight)
+    public void initGL(int screenWidth, int screenHeight)
     {
         frameGL.init(screenWidth, screenHeight);
 
@@ -132,20 +133,20 @@ public class RefFreeFrame {
     }
 
 
-    void reset()
+    public void reset()
     {
         curStatus = STATUS.STATUS_IDLE;
 
     }
 
 
-    void setCreating()
+    public void setCreating()
     {
         curStatus = STATUS.STATUS_CREATING;
     }
 
 
-    void updateUIState(ImageTargetBuilder targetBuilder, int frameQuality)
+    public void updateUIState(ImageTargetBuilder targetBuilder, int frameQuality)
     {
         // ** Elapsed time
         long elapsedTimeMS = System.currentTimeMillis() - lastFrameTime;
@@ -215,7 +216,7 @@ public class RefFreeFrame {
     }
 
 
-    void render()
+    public void render()
     {
         // Get the image tracker
         TrackerManager trackerManager = TrackerManager.getInstance();
@@ -252,7 +253,7 @@ public class RefFreeFrame {
     }
 
 
-    void renderScanningViewfinder(int quality)
+    public void renderScanningViewfinder(int quality)
     {
         frameGL.setModelViewScale(2.0f);
         frameGL.setColor(colorFrame);
@@ -260,13 +261,13 @@ public class RefFreeFrame {
     }
 
 
-    boolean hasNewTrackableSource()
+    public boolean hasNewTrackableSource()
     {
         return (trackableSource != null);
     }
 
 
-    TrackableSource getNewTrackableSource()
+    public TrackableSource getNewTrackableSource()
     {
         TrackableSource result = trackableSource;
         trackableSource = null;

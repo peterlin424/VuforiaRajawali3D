@@ -6,7 +6,7 @@ countries.
 ===============================================================================*/
 
 
-package project.peter.com.vuforiarajawali3d.SampleApplication;
+package project.peter.com.vuforiarajawali3d.Unit.vuforia.SampleApplication;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
