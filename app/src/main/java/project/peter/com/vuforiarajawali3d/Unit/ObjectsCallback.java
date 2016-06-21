@@ -10,4 +10,5 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 public interface ObjectsCallback {
     void parse(RajawaliRenderer renderer);
     void render(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix);
+    void visible(boolean visible);
 }

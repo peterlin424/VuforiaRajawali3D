@@ -1,5 +1,6 @@
 package project.peter.com.vuforiarajawali3d;
 
+import android.opengl.GLES20;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +8,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import org.rajawali3d.Camera;
+import org.rajawali3d.Object3D;
+import org.rajawali3d.materials.Material;
+import org.rajawali3d.materials.methods.DiffuseMethod;
+import org.rajawali3d.materials.textures.ATexture;
+import org.rajawali3d.materials.textures.Texture;
 import org.rajawali3d.math.Matrix4;
 import org.rajawali3d.renderer.RajawaliRenderer;
 
@@ -15,6 +21,7 @@ import java.util.ArrayList;
 import project.peter.com.vuforiarajawali3d.Unit.BaseVuforiaActivity;
 import project.peter.com.vuforiarajawali3d.Unit.Model3D;
 import project.peter.com.vuforiarajawali3d.Unit.ObjectsCallback;
+import project.peter.com.vuforiarajawali3d.Unit.rajawali.Cylinder;
 
 /**
  * Created by linweijie on 6/20/16.
@@ -22,6 +29,7 @@ import project.peter.com.vuforiarajawali3d.Unit.ObjectsCallback;
 public class CylinderTargetActivity extends BaseVuforiaActivity implements View.OnClickListener {
 
     private String LOGTAG = "CylinderTargetActivity";
+    private Object3D cylinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,15 +84,41 @@ public class CylinderTargetActivity extends BaseVuforiaActivity implements View.
 
         // target 2 , id : 1
         // VIDEO
-
         tempM3D = new Model3D(this, R.raw.music_video, new ObjectsCallback() {
             @Override
             public void parse(RajawaliRenderer renderer) {
-                
+
+
+                try {
+                    Material material = new Material();
+                    material.setColorInfluence(1);
+                    material.enableLighting(true);
+                    material.setDiffuseMethod(new DiffuseMethod.Lambert());
+                    material.setColor(0x990000);
+//                    material.addTexture(new Texture("Watch1", R.drawable.watch001));
+
+                    cylinder = new Cylinder(16, 3, 1, 10);
+                    cylinder.setMaterial(material);
+                    cylinder.setColor(0x000000);
+                    cylinder.setPosition(0.f, 3.f, -10.f);
+                    cylinder.setScale(1);
+                    cylinder.setRotation(0.f, 0.f, 90.f);
+                    cylinder.setDoubleSided(true);
+
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
             }
             @Override
             public void render(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix) {
+                cylinder.render(camera, vpMatrix, projMatrix, vMatrix, null);
+            }
 
+            @Override
+            public void visible(boolean visible) {
+                cylinder.setVisible(visible);
             }
         });
         tempM3D.setMODE(Model3D.LOAD_VIDEO_PLANE);

@@ -7,6 +7,8 @@ import android.view.MotionEvent;
 
 import org.rajawali3d.lights.DirectionalLight;
 import org.rajawali3d.lights.PointLight;
+import org.rajawali3d.util.debugvisualizer.DebugVisualizer;
+import org.rajawali3d.util.debugvisualizer.GridFloor;
 
 import java.util.ArrayList;
 

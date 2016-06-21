@@ -24,15 +24,11 @@ import org.rajawali3d.renderer.RajawaliRenderer;
 
 import java.util.ArrayList;
 
+
 /**
  * Created by linweijie on 4/18/16.
  */
 public class Model3D {
-
-//    public interface ObjectsInterface{
-//        void parse(RajawaliRenderer renderer);
-//        void render(Camera camera, Matrix4 vpMatrix, Matrix4 projMatrix, Matrix4 vMatrix);
-//    }
 
     public final static int LOAD_MTL_OBJ = 0;
     public final static int LOAD_MD5_MASH = 1;
@@ -42,7 +38,7 @@ public class Model3D {
 
     private Context context;
     private IBoundingVolume mCollBounding;
-    private Object3D Object3D, mCollCube;
+    private Object3D mObject3D, mCollCube;
     private SkeletalAnimationObject3D ObjectMash;
     private boolean visiable = false,
             canCollision = false,
@@ -94,7 +90,7 @@ public class Model3D {
                     LoaderOBJ parser = new LoaderOBJ(context.getResources(), renderer.getTextureManager(), resId_obj);
                     parser.parse();
 
-                    Object3D = parser.getParsedObject();
+                    mObject3D = parser.getParsedObject();
 
                     // 材質貼皮
                     material = new Material();
@@ -104,7 +100,7 @@ public class Model3D {
                     for (int i=0; i<resId_textures.size(); ++i){
                         material.addTexture(new Texture("Object3D", resId_textures.get(i)));
                     }
-                    Object3D.setMaterial(material);
+                    mObject3D.setMaterial(material);
                     break;
 
                 case LOAD_MD5_MASH:
@@ -136,18 +132,20 @@ public class Model3D {
                     material.setDiffuseMethod(new DiffuseMethod.Lambert());
                     material.addTexture(videoTexture);
 
-                    Object3D = new Plane(10f, 10f, 1, 1);
-                    Object3D.setMaterial(material);
-                    Object3D.setDoubleSided(true);
+                    mObject3D = new Plane(10f, 10f, 1, 1);
+                    mObject3D.setMaterial(material);
+                    mObject3D.setDoubleSided(true);
                     mediaPlayer.setLooping(true);
                     break;
             }
 
-            if (canCollision)
+            if (canCollision){
                 setCollisionBox();
+            }
 
-            if (objectsCallback!=null)
+            if (objectsCallback!=null){
                 objectsCallback.parse(renderer);
+            }
 
         } catch (Exception e){
             e.printStackTrace();
@@ -160,14 +158,14 @@ public class Model3D {
             switch (MODE){
                 case Model3D.LOAD_MTL_OBJ:
 //                    Object3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
-                    Object3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
+                    mObject3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     break;
                 case Model3D.LOAD_MD5_MASH:
 //                    ObjectMash.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     ObjectMash.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     break;
                 case Model3D.LOAD_VIDEO_PLANE:
-                    Object3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
+                    mObject3D.render(camera, vpMatrix, projMatrix, vMatrix, null);
                     videoTexture.update();
                     break;
             }
@@ -230,13 +228,13 @@ public class Model3D {
         try {
             switch (MODE){
                 case Model3D.LOAD_MTL_OBJ:
-                    Object3D.setVisible(visiable);
+                    mObject3D.setVisible(visiable);
                     break;
                 case Model3D.LOAD_MD5_MASH:
                     ObjectMash.setVisible(visiable);
                     break;
                 case Model3D.LOAD_VIDEO_PLANE:
-                    Object3D.setVisible(visiable);
+                    mObject3D.setVisible(visiable);
 
                     if (visiable){
                         if (!mediaPlayer.isPlaying()) mediaPlayer.start();
@@ -249,6 +247,10 @@ public class Model3D {
 
             if (canCollision)
                 mCollCube.setVisible(visiable);
+
+            if (objectsCallback!=null)
+                objectsCallback.visible(visiable);
+
         }catch (Exception e){
             e.printStackTrace();
         }
