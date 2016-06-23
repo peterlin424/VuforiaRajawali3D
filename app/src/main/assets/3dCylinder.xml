@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
-    <CylinderTarget name="fuze" sideLength="1602.000000"/>
+    <CylinderTarget name="cup" sideLength="373.000000"/>
     <CylinderTarget name="fanta" sideLength="1132.000000"/>
   </Tracking>
 </QCARConfig>

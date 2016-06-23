@@ -134,6 +134,8 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             case BaseVuforiaActivity.MODE_Cylinder:
                 CylinderTarget_FindTrackables(state);
                 break;
+            case BaseVuforiaActivity.MODE_CubiodBox:
+                CubiodBoxTarget_FindTrackables(state);
         }
 
         GLES20.glDisable(GLES20.GL_DEPTH_TEST);
@@ -353,6 +355,7 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
             mActivity.HideAllModel();
         }
     }
+
     private void CylinderTarget_FindTrackables(State state){
         if (state.getNumTrackableResults()>0){
 
@@ -364,6 +367,48 @@ public class BaseVuforiaRender implements GLSurfaceView.Renderer {
 
                 if (!result.isOfType(CylinderTargetResult.getClassType()))
                     continue;
+
+                if (result == null)
+                {
+                    mActivity.HideAllModel();
+                    return;
+                }
+
+                if (DEBUG)
+                    Log.d(LOGTAG, "CylinderTarget trackable " + tIdx + " Name : " + result.getTrackable().getName());
+
+                // 依本地設定的 DataSet xml 內容來選擇所要顯示的 model
+                for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                    if (temp_dataset.getTrackable(i).getName().equals(result.getTrackable().getName())){
+                        recorder.put(i, result);
+                    }
+                }
+            }
+
+            ArrayList<Boolean> visibleRecorder = new ArrayList<>();
+            for (int i=0; i<temp_dataset.getNumTrackables(); ++i){
+                if (recorder.get(i)!=null){
+                    visibleRecorder.add(true);
+                    renderAugmentation(recorder.get(i), i);
+                } else {
+                    visibleRecorder.add(false);
+                }
+            }
+            mActivity.setVisibleModelByBoolenArray(visibleRecorder);
+
+        } else {
+            mActivity.HideAllModel();
+        }
+    }
+
+    private void CubiodBoxTarget_FindTrackables(State state){
+        if (state.getNumTrackableResults()>0){
+
+            DataSet temp_dataset = mActivity.getmCurrentDataset();
+            HashMap<Integer, TrackableResult> recorder = new HashMap<>();
+
+            for(int tIdx=0; tIdx<state.getNumTrackableResults(); tIdx++){
+                TrackableResult result = state.getTrackableResult(tIdx);
 
                 if (result == null)
                 {

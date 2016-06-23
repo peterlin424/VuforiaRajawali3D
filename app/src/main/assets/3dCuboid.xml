@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<QCARConfig>
+    <Tracking>
+        <ImageTarget name="MaoBao.Bottom" size="675.000000 400.000000"/>
+        <ImageTarget name="MaoBao.Right" size="400.000000 725.000000"/>
+        <ImageTarget name="MaoBao.Front" size="675.000000 725.000000"/>
+        <ImageTarget name="MaoBao.Top" size="675.000000 400.000000"/>
+        <ImageTarget name="MaoBao.Back" size="675.000000 725.000000"/>
+        <ImageTarget name="MaoBao.Left" size="400.000000 725.000000"/>
+        <ImageTarget name="box1.Bottom" size="450.000000 450.000000"/>
+        <ImageTarget name="box1.Right" size="450.000000 1450.000000"/>
+        <ImageTarget name="box1.Front" size="450.000000 1450.000000"/>
+        <ImageTarget name="box1.Top" size="450.000000 450.000000"/>
+        <ImageTarget name="box1.Back" size="450.000000 1450.000000"/>
+        <ImageTarget name="box1.Left" size="450.000000 1450.000000"/>
+        <MultiTarget name="MaoBao">
+            <Part name="MaoBao.Left" translation="-337.5 0 0" rotation="AD: 0 1 0 -90"/>
+            <Part name="MaoBao.Right" translation="337.5 0 0" rotation="AD: 0 1 0 90"/>
+            <Part name="MaoBao.Front" translation="0 0 200.0" rotation="AD: 1 0 0 0"/>
+            <Part name="MaoBao.Back" translation="0 0 -200.0" rotation="AD: 0 1 0 180"/>
+            <Part name="MaoBao.Top" translation="0 362.5 0" rotation="AD: 1 0 0 -90"/>
+            <Part name="MaoBao.Bottom" translation="0 -362.5 0" rotation="AD: 1 0 0 90"/>
+        </MultiTarget>
+        <MultiTarget name="Box1">
+            <Part name="box1.Left" translation="-225.0 0 0" rotation="AD: 0 1 0 -90"/>
+            <Part name="box1.Right" translation="225.0 0 0" rotation="AD: 0 1 0 90"/>
+            <Part name="box1.Front" translation="0 0 225.0" rotation="AD: 1 0 0 0"/>
+            <Part name="box1.Back" translation="0 0 -225.0" rotation="AD: 0 1 0 180"/>
+            <Part name="box1.Top" translation="0 725.0 0" rotation="AD: 1 0 0 -90"/>
+            <Part name="box1.Bottom" translation="0 -725.0 0" rotation="AD: 1 0 0 90"/>
+        </MultiTarget>
+    </Tracking>
+</QCARConfig>

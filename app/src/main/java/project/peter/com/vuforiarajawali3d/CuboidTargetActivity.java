@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
 
 import org.rajawali3d.Camera;
 import org.rajawali3d.Object3D;
@@ -21,11 +20,11 @@ import project.peter.com.vuforiarajawali3d.Unit.ObjectsCallback;
 import project.peter.com.vuforiarajawali3d.Unit.rajawali.Cylinder;
 
 /**
- * Created by linweijie on 6/20/16.
+ * Created by linweijie on 6/23/16.
  */
-public class CylinderTargetActivity extends BaseVuforiaActivity implements View.OnClickListener {
+public class CuboidTargetActivity extends BaseVuforiaActivity implements View.OnClickListener {
 
-    private String LOGTAG = "CylinderTargetActivity";
+    private String LOGTAG = "CuboidTargetActivity";
     private Object3D cylinder;
 
     @Override
@@ -47,7 +46,7 @@ public class CylinderTargetActivity extends BaseVuforiaActivity implements View.
 
         // set local target library
         ArrayList<String> dataString = new ArrayList<>();
-        dataString.add("3dCylinder.xml");
+        dataString.add("3dCuboid.xml");
         this.setDatasetStrings(dataString);
 
         // set max targets will show in same time
@@ -85,7 +84,6 @@ public class CylinderTargetActivity extends BaseVuforiaActivity implements View.
             @Override
             public void parse(RajawaliRenderer renderer) {
 
-
                 try {
                     Material material = new Material();
                     material.setColorInfluence(1);
@@ -100,7 +98,6 @@ public class CylinderTargetActivity extends BaseVuforiaActivity implements View.
                     cylinder.setScale(1);
                     cylinder.setRotation(0.f, 0.f, 90.f);
                     cylinder.setDoubleSided(true);
-
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -136,6 +133,6 @@ public class CylinderTargetActivity extends BaseVuforiaActivity implements View.
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(CylinderTargetActivity.this, "CylinderTarget", Toast.LENGTH_SHORT).show();
+
     }
 }

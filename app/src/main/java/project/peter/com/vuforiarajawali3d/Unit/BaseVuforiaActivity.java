@@ -59,7 +59,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
     public final static int MODE_FrameMarkers = 2;
     public final static int MODE_VirtualButton = 3;
     public final static int MODE_UserDefinedTarget = 4;
-//    public final static int MODE_CubiodBox = 5;
+    public final static int MODE_CubiodBox = 5;
     public final static int MODE_Cylinder = 6;
 
     private int MODE = MODE_ImageTarget;
@@ -243,6 +243,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
         switch (MODE){
             case MODE_ImageTarget:
             case MODE_Cylinder:
+            case MODE_CubiodBox:
                 if (mDatasetStrings.size()<=0){
                     new AlertDialog.Builder(this)
                             .setTitle("Init Error")
@@ -482,6 +483,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_VirtualButton:
             case MODE_UserDefinedTarget:
             case MODE_Cylinder:
+            case MODE_CubiodBox:
                 Tracker tracker = trackerManager.initTracker(ObjectTracker.getClassType());
                 if (tracker == null)
                 {
@@ -525,6 +527,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
                 case MODE_ImageTarget:
                 case MODE_VirtualButton:
                 case MODE_Cylinder:
+                case MODE_CubiodBox:
                     ObjectTracker objectTracker = (ObjectTracker) trackerManager
                             .getTracker(ObjectTracker.getClassType());
                     if (objectTracker == null){
@@ -661,6 +664,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_VirtualButton:
             case MODE_UserDefinedTarget:
             case MODE_Cylinder:
+            case MODE_CubiodBox:
                 Tracker tracker = TrackerManager.getInstance().getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -700,6 +704,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_VirtualButton:
             case MODE_UserDefinedTarget:
             case MODE_Cylinder:
+            case MODE_CubiodBox:
                 Tracker tracker = trackerManager.getTracker(
                         ObjectTracker.getClassType());
                 if (tracker != null)
@@ -747,6 +752,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_ImageTarget:
             case MODE_VirtualButton:
             case MODE_Cylinder:
+            case MODE_CubiodBox:
                 ObjectTracker objectTracker = (ObjectTracker) tManager
                         .getTracker(ObjectTracker.getClassType());
                 if (objectTracker == null){
@@ -904,6 +910,8 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_Cylinder:
                 BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_Cylinder);
                 break;
+            case MODE_CubiodBox:
+                BaseVuforiaRender.setARMode(BaseVuforiaActivity.MODE_CubiodBox);
         }
 
         if (BaseVuforiaRender != null)
@@ -1042,6 +1050,7 @@ public class BaseVuforiaActivity extends AppCompatActivity implements SampleAppl
             case MODE_FrameMarkers:
             case MODE_VirtualButton:
             case MODE_Cylinder:
+            case MODE_CubiodBox:
                 break;
             case MODE_CloudReco:
                 TrackerManager trackerManager = TrackerManager.getInstance();

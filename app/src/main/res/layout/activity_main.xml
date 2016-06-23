@@ -58,8 +58,17 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="CylinderTarget Target"
+        android:text="Cylinder Target"
         android:id="@+id/bt_cylinder_target"
         android:layout_below="@+id/bt_userdefined_target"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cuboid Target"
+        android:id="@+id/bt_cuboid_target"
+        android:layout_below="@+id/bt_cylinder_target"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
