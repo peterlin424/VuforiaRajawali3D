@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <QCARConfig xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="qcar_config.xsd">
   <Tracking>
+    <ImageTarget name="mark-15" size="100.000000 100.000000" />
+    <ImageTarget name="mark-29" size="100.000000 100.000000" />
     <ImageTarget name="low_resolution_image" size="100.000000 135.021103" />
+    <ImageTarget name="google-cloud" size="100.000000 75.024391" />
   </Tracking>
 </QCARConfig>
